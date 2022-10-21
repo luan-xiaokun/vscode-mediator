@@ -1,0 +1,12 @@
+{
+    "projectName": "Mediator",
+    "languages": [{
+        "id": "mediator",
+        "grammar": "src/language-server/mediator.langium",
+        "fileExtensions": [".med"],
+        "textMate": {
+            "out": "syntaxes/mediator.tmLanguage.json"
+        }
+    }],
+    "out": "src/language-server/generated"
+}

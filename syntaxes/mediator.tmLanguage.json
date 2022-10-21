@@ -1,0 +1,57 @@
+{
+  "name": "mediator",
+  "scopeName": "source.mediator",
+  "fileTypes": [
+    ".med"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "name": "keyword.control.mediator",
+      "match": "\\b(Hello|person)\\b"
+    },
+    {
+      "name": "string.quoted.double.mediator",
+      "begin": "\"",
+      "end": "\""
+    },
+    {
+      "name": "string.quoted.single.mediator",
+      "begin": "'",
+      "end": "'"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.mediator",
+          "begin": "/\\*",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.mediator"
+            }
+          },
+          "end": "\\*/",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.mediator"
+            }
+          }
+        },
+        {
+          "begin": "//",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.whitespace.comment.leading.mediator"
+            }
+          },
+          "end": "(?=$)",
+          "name": "comment.line.mediator"
+        }
+      ]
+    }
+  }
+}

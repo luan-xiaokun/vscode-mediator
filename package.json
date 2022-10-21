@@ -1,0 +1,77 @@
+{
+    "name": "vscode-mediator",
+    "displayName": "vscode-mediator",
+    "description": "VS Code support for Mediator language",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.56.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "mediator",
+                "aliases": [
+                    "Mediator",
+                    "mediator"
+                ],
+                "extensions": [
+                    ".med"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "mediator",
+                "scopeName": "source.mediator",
+                "path": "./syntaxes/mediator.tmLanguage.json"
+            }
+        ]
+    },
+    "activationEvents": [
+        "onLanguage:mediator"
+    ],
+    "files": [
+        "bin",
+        "out",
+        "src"
+    ],
+    "bin": {
+        "mediator-cli": "./bin/cli"
+    },
+    "main": "./out/extension.js",
+    "scripts": {
+        "vscode:prepublish": "npm run build && npm run lint && npm run esbuild-base -- --minify",
+        "build": "tsc -b tsconfig.json",
+        "watch": "tsc -b tsconfig.json --watch",
+        "lint": "eslint src --ext ts",
+        "langium:generate": "langium generate",
+        "langium:watch": "langium generate --watch",
+        "esbuild-base": "esbuild ./src/extension.ts ./src/language-server/main.ts --bundle --outdir=out --external:vscode --format=cjs --platform=node",
+        "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch"
+    },
+    "dependencies": {
+        "chalk": "^4.1.2",
+        "chevrotain": "^9.1.0",
+        "commander": "^8.0.0",
+        "langium": "^0.5.0",
+        "vscode-languageclient": "^8.0.2",
+        "vscode-languageserver": "^8.0.2",
+        "vscode-uri": "^3.0.2"
+    },
+    "devDependencies": {
+        "@types/node": "^14.17.3",
+        "@types/vscode": "^1.56.0",
+        "@typescript-eslint/eslint-plugin": "^5.28.0",
+        "@typescript-eslint/parser": "^5.28.0",
+        "esbuild": "^0.15.12",
+        "eslint": "^8.17.0",
+        "langium-cli": "^0.5.0",
+        "typescript": "^4.7.4"
+    },
+    "license": "MIT"
+}
