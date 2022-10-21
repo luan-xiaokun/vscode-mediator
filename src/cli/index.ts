@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { Command } from 'commander';
-import { Model } from '../language-server/generated/ast';
+import { Program } from '../language-server/generated/ast';
 import { MediatorLanguageMetaData } from '../language-server/generated/module';
 import { createMediatorServices } from '../language-server/mediator-module';
 import { extractAstNode } from './cli-util';
@@ -9,7 +9,7 @@ import { NodeFileSystem } from 'langium/node';
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const services = createMediatorServices(NodeFileSystem).Mediator;
-    const model = await extractAstNode<Model>(fileName, services);
+    const model = await extractAstNode<Program>(fileName, services);
     const generatedFilePath = generateJavaScript(model, fileName, opts.destination);
     console.log(chalk.green(`JavaScript code generated successfully: ${generatedFilePath}`));
 };
@@ -18,7 +18,7 @@ export type GenerateOptions = {
     destination?: string;
 }
 
-export default function(): void {
+export default function (): void {
     const program = new Command();
 
     program

@@ -13,36 +13,19 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
   "rules": [
     {
       "$type": "ParserRule",
-      "name": "Model",
+      "name": "Program",
       "entry": true,
       "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "persons",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$refText": "Person"
-              },
-              "arguments": []
-            }
+        "$type": "Assignment",
+        "feature": "expr",
+        "operator": "+=",
+        "terminal": {
+          "$type": "RuleCall",
+          "rule": {
+            "$refText": "Term"
           },
-          {
-            "$type": "Assignment",
-            "feature": "greetings",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$refText": "Greeting"
-              },
-              "arguments": []
-            }
-          }
-        ],
+          "arguments": []
+        },
         "cardinality": "*"
       },
       "definesHiddenTokens": false,
@@ -53,17 +36,881 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "Person",
+      "name": "Type",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "PrimitiveType"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "InitType"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "init"
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ParameterType",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "ParameterType"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "type"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "func"
+              },
+              {
+                "$type": "Keyword",
+                "value": "("
+              },
+              {
+                "$type": "Assignment",
+                "feature": "arg_types",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Type"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "arg_types",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Type"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "*"
+              },
+              {
+                "$type": "Keyword",
+                "value": ")"
+              },
+              {
+                "$type": "Keyword",
+                "value": ":"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "return_type",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Type"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "interface"
+              },
+              {
+                "$type": "Keyword",
+                "value": "("
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "ports",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "PortTyping"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": ","
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "ports",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$refText": "PortTyping"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "cardinality": "*"
+                  }
+                ],
+                "cardinality": "?"
+              },
+              {
+                "$type": "Keyword",
+                "value": ")"
+              }
+            ]
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "PortTyping",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "PortTyping"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "direction",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "Keyword",
+                  "value": "in"
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "out"
+                }
+              ]
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "vtype",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Type"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "PrimitiveType",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "PrimitiveType"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "IntType"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "int"
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "BoundedIntType"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "int"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "lbound",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Term"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": ".."
+              },
+              {
+                "$type": "Assignment",
+                "feature": "ubound",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Term"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "RealType"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "real"
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "CharType"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "char"
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "BoolType"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "bool"
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "NullType"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "NULL"
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "EnumType"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "enum"
+              },
+              {
+                "$type": "Keyword",
+                "value": "{"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "members",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "ID"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "members",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "ID"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "*"
+              },
+              {
+                "$type": "Keyword",
+                "value": "}"
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "StructType"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "struct"
+              },
+              {
+                "$type": "Keyword",
+                "value": "{"
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "fields",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "ID"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ":"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "types",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Type"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ";"
+                  }
+                ],
+                "cardinality": "+"
+              },
+              {
+                "$type": "Keyword",
+                "value": "}"
+              }
+            ]
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Term",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "Literal"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "ScopedId"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "PortVar"
+                    },
+                    "feature": "port",
+                    "operator": "="
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "."
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "field",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "PORTFIELD"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "?"
+              }
+            ]
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "StructTerm"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "BracketTerm"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "BracketTerm",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "Term"
+      },
       "definition": {
         "$type": "Group",
         "elements": [
           {
             "$type": "Keyword",
-            "value": "person"
+            "value": "("
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "Term"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "TupleTerm"
+                },
+                "feature": "members",
+                "operator": "+="
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "members",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Term"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Terms",
+      "fragment": true,
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "Term"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "Term"
+                },
+                "arguments": []
+              }
+            ],
+            "cardinality": "+"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "StructTerm",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "StructTerm"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "struct"
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "fields",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "ID"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "="
+              },
+              {
+                "$type": "Assignment",
+                "feature": "values",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Term"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "fields",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "ID"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "="
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "values",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Term"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "*"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Literal",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "Literal"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "IntLiteral"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "RealLiteral"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "CharLiteral"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "BoolLiteral"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "NullLiteral"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ScopedId",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "ScopedId"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "scope",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "ID"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "."
+              }
+            ],
+            "cardinality": "*"
           },
           {
             "$type": "Assignment",
-            "feature": "name",
+            "feature": "identifier",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
@@ -84,38 +931,123 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "Greeting",
+      "name": "IntLiteral",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "IntLiteral"
+      },
       "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Keyword",
-            "value": "Hello"
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "rule": {
+            "$refText": "INT"
           },
-          {
-            "$type": "Assignment",
-            "feature": "person",
-            "operator": "=",
-            "terminal": {
-              "$type": "CrossReference",
-              "type": {
-                "$refText": "Person"
-              },
-              "terminal": {
-                "$type": "RuleCall",
-                "rule": {
-                  "$refText": "ID"
-                },
-                "arguments": []
-              },
-              "deprecatedSyntax": false
-            }
+          "arguments": []
+        }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "RealLiteral",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "RealLiteral"
+      },
+      "definition": {
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "rule": {
+            "$refText": "REAL"
           },
-          {
-            "$type": "Keyword",
-            "value": "!"
-          }
-        ]
+          "arguments": []
+        }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "CharLiteral",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "CharLiteral"
+      },
+      "definition": {
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "rule": {
+            "$refText": "CHAR"
+          },
+          "arguments": []
+        }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "BoolLiteral",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "BoolLiteral"
+      },
+      "definition": {
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "rule": {
+            "$refText": "BOOL"
+          },
+          "arguments": []
+        }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "NullLiteral",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "NullLiteral"
+      },
+      "definition": {
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "=",
+        "terminal": {
+          "$type": "Keyword",
+          "value": "null"
+        }
       },
       "definesHiddenTokens": false,
       "entry": false,
@@ -126,6 +1058,263 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "TerminalRule",
+      "name": "INT",
+      "type": {
+        "$type": "ReturnType",
+        "name": "number"
+      },
+      "definition": {
+        "$type": "TerminalAlternatives",
+        "elements": [
+          {
+            "$type": "TerminalAlternatives",
+            "elements": [
+              {
+                "$type": "TerminalAlternatives",
+                "elements": [
+                  {
+                    "$type": "TerminalRuleCall",
+                    "rule": {
+                      "$refText": "BINSEQ"
+                    }
+                  },
+                  {
+                    "$type": "TerminalRuleCall",
+                    "rule": {
+                      "$refText": "OCTSEQ"
+                    }
+                  }
+                ]
+              },
+              {
+                "$type": "TerminalRuleCall",
+                "rule": {
+                  "$refText": "HEXSEQ"
+                }
+              }
+            ]
+          },
+          {
+            "$type": "TerminalRuleCall",
+            "rule": {
+              "$refText": "DECSEQ"
+            }
+          }
+        ]
+      },
+      "fragment": false,
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "REAL",
+      "type": {
+        "$type": "ReturnType",
+        "name": "number"
+      },
+      "definition": {
+        "$type": "TerminalAlternatives",
+        "elements": [
+          {
+            "$type": "TerminalGroup",
+            "elements": [
+              {
+                "$type": "TerminalRuleCall",
+                "rule": {
+                  "$refText": "DECFRAC"
+                }
+              },
+              {
+                "$type": "TerminalRuleCall",
+                "rule": {
+                  "$refText": "EXPONENT"
+                },
+                "cardinality": "?"
+              }
+            ]
+          },
+          {
+            "$type": "TerminalGroup",
+            "elements": [
+              {
+                "$type": "TerminalRuleCall",
+                "rule": {
+                  "$refText": "DECSEQ"
+                }
+              },
+              {
+                "$type": "TerminalRuleCall",
+                "rule": {
+                  "$refText": "EXPONENT"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "fragment": false,
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "BINSEQ",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "0[bB][01]+"
+      },
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "OCTSEQ",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "0[oO][0-7]+"
+      },
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "HEXSEQ",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "0[xX][\\\\da-fA-F]+"
+      },
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "DECFRAC",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "(([1-9]\\\\d*|0)?\\\\.\\\\d+)"
+      },
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "DECSEQ",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "[1-9]\\\\d*|0"
+      },
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "EXPONENT",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "[eE][+-]?\\\\d+"
+      },
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "CHAR",
+      "type": {
+        "$type": "ReturnType",
+        "name": "string"
+      },
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "'[^'\\\\\\\\\\\\s]'|'\\\\\\\\[abtnvfr0e\\\\\\\\']'|' '"
+      },
+      "fragment": false,
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "BOOL",
+      "type": {
+        "$type": "ReturnType",
+        "name": "boolean"
+      },
+      "definition": {
+        "$type": "TerminalAlternatives",
+        "elements": [
+          {
+            "$type": "CharacterRange",
+            "left": {
+              "$type": "Keyword",
+              "value": "true"
+            }
+          },
+          {
+            "$type": "CharacterRange",
+            "left": {
+              "$type": "Keyword",
+              "value": "false"
+            }
+          }
+        ]
+      },
+      "fragment": false,
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "PORTFIELD",
+      "type": {
+        "$type": "ReturnType",
+        "name": "string"
+      },
+      "definition": {
+        "$type": "TerminalAlternatives",
+        "elements": [
+          {
+            "$type": "TerminalAlternatives",
+            "elements": [
+              {
+                "$type": "CharacterRange",
+                "left": {
+                  "$type": "Keyword",
+                  "value": "value"
+                }
+              },
+              {
+                "$type": "CharacterRange",
+                "left": {
+                  "$type": "Keyword",
+                  "value": "reqRead"
+                }
+              }
+            ]
+          },
+          {
+            "$type": "CharacterRange",
+            "left": {
+              "$type": "Keyword",
+              "value": "reqWrite"
+            }
+          }
+        ]
+      },
+      "fragment": false,
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "ID",
+      "type": {
+        "$type": "ReturnType",
+        "name": "string"
+      },
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "[a-zA-Z_]\\\\w*"
+      },
+      "fragment": false,
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
       "hidden": true,
       "name": "WS",
       "definition": {
@@ -133,40 +1322,6 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
         "regex": "\\\\s+"
       },
       "fragment": false
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "ID",
-      "definition": {
-        "$type": "RegexToken",
-        "regex": "[_a-zA-Z][\\\\w_]*"
-      },
-      "fragment": false,
-      "hidden": false
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "INT",
-      "type": {
-        "$type": "ReturnType",
-        "name": "number"
-      },
-      "definition": {
-        "$type": "RegexToken",
-        "regex": "[0-9]+"
-      },
-      "fragment": false,
-      "hidden": false
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "STRING",
-      "definition": {
-        "$type": "RegexToken",
-        "regex": "\\"[^\\"]*\\"|'[^']*'"
-      },
-      "fragment": false,
-      "hidden": false
     },
     {
       "$type": "TerminalRule",
@@ -189,10 +1344,17 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
       "fragment": false
     }
   ],
+  "interfaces": [
+    {
+      "$type": "Interface",
+      "name": "LiteralType",
+      "attributes": [],
+      "superTypes": []
+    }
+  ],
   "definesHiddenTokens": false,
   "hiddenTokens": [],
   "imports": [],
-  "interfaces": [],
   "types": [],
   "usedGrammars": []
 }`));

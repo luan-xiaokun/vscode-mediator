@@ -5,47 +5,276 @@
 
 /* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { AstNode, AstReflection, Reference, ReferenceInfo, isAstNode, TypeMetaData } from 'langium';
+import { AstNode, AstReflection, ReferenceInfo, isAstNode, TypeMetaData } from 'langium';
 
-export interface Greeting extends AstNode {
-    readonly $container: Model;
-    person: Reference<Person>
+export type InitType = PrimitiveType;
+
+export const InitType = 'InitType';
+
+export function isInitType(item: unknown): item is InitType {
+    return reflection.isInstance(item, InitType);
 }
 
-export const Greeting = 'Greeting';
+export type Literal = BoolLiteral | CharLiteral | IntLiteral | NullLiteral | RealLiteral;
 
-export function isGreeting(item: unknown): item is Greeting {
-    return reflection.isInstance(item, Greeting);
+export const Literal = 'Literal';
+
+export function isLiteral(item: unknown): item is Literal {
+    return reflection.isInstance(item, Literal);
 }
 
-export interface Model extends AstNode {
-    greetings: Array<Greeting>
-    persons: Array<Person>
+export type PrimitiveType = BoolType | BoundedIntType | CharType | EnumType | IntType | NullType | RealType | StructType;
+
+export const PrimitiveType = 'PrimitiveType';
+
+export function isPrimitiveType(item: unknown): item is PrimitiveType {
+    return reflection.isInstance(item, PrimitiveType);
 }
 
-export const Model = 'Model';
+export type Term = Literal | PortVar | ScopedId | StructTerm | TupleTerm;
 
-export function isModel(item: unknown): item is Model {
-    return reflection.isInstance(item, Model);
+export const Term = 'Term';
+
+export function isTerm(item: unknown): item is Term {
+    return reflection.isInstance(item, Term);
 }
 
-export interface Person extends AstNode {
-    readonly $container: Model;
-    name: string
+export type Type = InitType | PrimitiveType;
+
+export const Type = 'Type';
+
+export function isType(item: unknown): item is Type {
+    return reflection.isInstance(item, Type);
 }
 
-export const Person = 'Person';
-
-export function isPerson(item: unknown): item is Person {
-    return reflection.isInstance(item, Person);
+export interface BoolLiteral extends AstNode {
+    readonly $container: BoundedIntType | PortVar | Program | StructTerm | TupleTerm;
+    value: boolean
 }
 
-export type MediatorAstType = 'Greeting' | 'Model' | 'Person';
+export const BoolLiteral = 'BoolLiteral';
+
+export function isBoolLiteral(item: unknown): item is BoolLiteral {
+    return reflection.isInstance(item, BoolLiteral);
+}
+
+export interface BoolType extends AstNode {
+}
+
+export const BoolType = 'BoolType';
+
+export function isBoolType(item: unknown): item is BoolType {
+    return reflection.isInstance(item, BoolType);
+}
+
+export interface BoundedIntType extends AstNode {
+    lbound: Term
+    ubound: Term
+}
+
+export const BoundedIntType = 'BoundedIntType';
+
+export function isBoundedIntType(item: unknown): item is BoundedIntType {
+    return reflection.isInstance(item, BoundedIntType);
+}
+
+export interface CharLiteral extends AstNode {
+    readonly $container: BoundedIntType | PortVar | Program | StructTerm | TupleTerm;
+    value: string
+}
+
+export const CharLiteral = 'CharLiteral';
+
+export function isCharLiteral(item: unknown): item is CharLiteral {
+    return reflection.isInstance(item, CharLiteral);
+}
+
+export interface CharType extends AstNode {
+}
+
+export const CharType = 'CharType';
+
+export function isCharType(item: unknown): item is CharType {
+    return reflection.isInstance(item, CharType);
+}
+
+export interface EnumType extends AstNode {
+    members: Array<string>
+}
+
+export const EnumType = 'EnumType';
+
+export function isEnumType(item: unknown): item is EnumType {
+    return reflection.isInstance(item, EnumType);
+}
+
+export interface IntLiteral extends AstNode {
+    readonly $container: BoundedIntType | PortVar | Program | StructTerm | TupleTerm;
+    value: number
+}
+
+export const IntLiteral = 'IntLiteral';
+
+export function isIntLiteral(item: unknown): item is IntLiteral {
+    return reflection.isInstance(item, IntLiteral);
+}
+
+export interface IntType extends AstNode {
+}
+
+export const IntType = 'IntType';
+
+export function isIntType(item: unknown): item is IntType {
+    return reflection.isInstance(item, IntType);
+}
+
+export interface LiteralType extends AstNode {
+}
+
+export const LiteralType = 'LiteralType';
+
+export function isLiteralType(item: unknown): item is LiteralType {
+    return reflection.isInstance(item, LiteralType);
+}
+
+export interface NullLiteral extends AstNode {
+    readonly $container: BoundedIntType | PortVar | Program | StructTerm | TupleTerm;
+    value: 'null'
+}
+
+export const NullLiteral = 'NullLiteral';
+
+export function isNullLiteral(item: unknown): item is NullLiteral {
+    return reflection.isInstance(item, NullLiteral);
+}
+
+export interface NullType extends AstNode {
+}
+
+export const NullType = 'NullType';
+
+export function isNullType(item: unknown): item is NullType {
+    return reflection.isInstance(item, NullType);
+}
+
+export interface ParameterType extends AstNode {
+    arg_types: Array<Type>
+    ports: Array<PortTyping>
+    return_type?: Type
+}
+
+export const ParameterType = 'ParameterType';
+
+export function isParameterType(item: unknown): item is ParameterType {
+    return reflection.isInstance(item, ParameterType);
+}
+
+export interface PortTyping extends AstNode {
+    readonly $container: ParameterType;
+    direction: 'in' | 'out'
+    vtype: Type
+}
+
+export const PortTyping = 'PortTyping';
+
+export function isPortTyping(item: unknown): item is PortTyping {
+    return reflection.isInstance(item, PortTyping);
+}
+
+export interface PortVar extends AstNode {
+    readonly $container: BoundedIntType | PortVar | Program | StructTerm | TupleTerm;
+    field: string
+    port: ScopedId
+}
+
+export const PortVar = 'PortVar';
+
+export function isPortVar(item: unknown): item is PortVar {
+    return reflection.isInstance(item, PortVar);
+}
+
+export interface Program extends AstNode {
+    expr: Array<Term>
+}
+
+export const Program = 'Program';
+
+export function isProgram(item: unknown): item is Program {
+    return reflection.isInstance(item, Program);
+}
+
+export interface RealLiteral extends AstNode {
+    readonly $container: BoundedIntType | PortVar | Program | StructTerm | TupleTerm;
+    value: number
+}
+
+export const RealLiteral = 'RealLiteral';
+
+export function isRealLiteral(item: unknown): item is RealLiteral {
+    return reflection.isInstance(item, RealLiteral);
+}
+
+export interface RealType extends AstNode {
+}
+
+export const RealType = 'RealType';
+
+export function isRealType(item: unknown): item is RealType {
+    return reflection.isInstance(item, RealType);
+}
+
+export interface ScopedId extends AstNode {
+    readonly $container: BoundedIntType | PortVar | Program | StructTerm | TupleTerm;
+    identifier: string
+    scope: Array<string>
+}
+
+export const ScopedId = 'ScopedId';
+
+export function isScopedId(item: unknown): item is ScopedId {
+    return reflection.isInstance(item, ScopedId);
+}
+
+export interface StructTerm extends AstNode {
+    readonly $container: BoundedIntType | PortVar | Program | StructTerm | TupleTerm;
+    fields: Array<string>
+    values: Array<Term>
+}
+
+export const StructTerm = 'StructTerm';
+
+export function isStructTerm(item: unknown): item is StructTerm {
+    return reflection.isInstance(item, StructTerm);
+}
+
+export interface StructType extends AstNode {
+    fields: Array<string>
+    types: Array<Type>
+}
+
+export const StructType = 'StructType';
+
+export function isStructType(item: unknown): item is StructType {
+    return reflection.isInstance(item, StructType);
+}
+
+export interface TupleTerm extends AstNode {
+    readonly $container: BoundedIntType | PortVar | Program | StructTerm | TupleTerm;
+    members: Array<Term>
+}
+
+export const TupleTerm = 'TupleTerm';
+
+export function isTupleTerm(item: unknown): item is TupleTerm {
+    return reflection.isInstance(item, TupleTerm);
+}
+
+export type MediatorAstType = 'BoolLiteral' | 'BoolType' | 'BoundedIntType' | 'CharLiteral' | 'CharType' | 'EnumType' | 'InitType' | 'IntLiteral' | 'IntType' | 'Literal' | 'LiteralType' | 'NullLiteral' | 'NullType' | 'ParameterType' | 'PortTyping' | 'PortVar' | 'PrimitiveType' | 'Program' | 'RealLiteral' | 'RealType' | 'ScopedId' | 'StructTerm' | 'StructType' | 'Term' | 'TupleTerm' | 'Type';
 
 export class MediatorAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Greeting', 'Model', 'Person'];
+        return ['BoolLiteral', 'BoolType', 'BoundedIntType', 'CharLiteral', 'CharType', 'EnumType', 'InitType', 'IntLiteral', 'IntType', 'Literal', 'LiteralType', 'NullLiteral', 'NullType', 'ParameterType', 'PortTyping', 'PortVar', 'PrimitiveType', 'Program', 'RealLiteral', 'RealType', 'ScopedId', 'StructTerm', 'StructType', 'Term', 'TupleTerm', 'Type'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -57,6 +286,33 @@ export class MediatorAstReflection implements AstReflection {
             return true;
         }
         switch (subtype) {
+            case BoolLiteral:
+            case CharLiteral:
+            case IntLiteral:
+            case NullLiteral:
+            case RealLiteral: {
+                return this.isSubtype(Literal, supertype);
+            }
+            case BoolType:
+            case BoundedIntType:
+            case CharType:
+            case EnumType:
+            case IntType:
+            case NullType:
+            case RealType:
+            case StructType: {
+                return this.isSubtype(PrimitiveType, supertype);
+            }
+            case PortVar:
+            case ScopedId:
+            case StructTerm:
+            case TupleTerm:
+            case Literal: {
+                return this.isSubtype(Term, supertype);
+            }
+            case InitType: {
+                return this.isSubtype(Type, supertype);
+            }
             default: {
                 return false;
             }
@@ -66,9 +322,6 @@ export class MediatorAstReflection implements AstReflection {
     getReferenceType(refInfo: ReferenceInfo): string {
         const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
         switch (referenceId) {
-            case 'Greeting:person': {
-                return Person;
-            }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
             }
@@ -77,12 +330,70 @@ export class MediatorAstReflection implements AstReflection {
 
     getTypeMetaData(type: string): TypeMetaData {
         switch (type) {
-            case 'Model': {
+            case 'BoolLiteral': {
                 return {
-                    name: 'Model',
+                    name: 'BoolLiteral',
                     mandatory: [
-                        { name: 'greetings', type: 'array' },
-                        { name: 'persons', type: 'array' }
+                        { name: 'value', type: 'boolean' }
+                    ]
+                };
+            }
+            case 'EnumType': {
+                return {
+                    name: 'EnumType',
+                    mandatory: [
+                        { name: 'members', type: 'array' }
+                    ]
+                };
+            }
+            case 'ParameterType': {
+                return {
+                    name: 'ParameterType',
+                    mandatory: [
+                        { name: 'arg_types', type: 'array' },
+                        { name: 'ports', type: 'array' }
+                    ]
+                };
+            }
+            case 'Program': {
+                return {
+                    name: 'Program',
+                    mandatory: [
+                        { name: 'expr', type: 'array' }
+                    ]
+                };
+            }
+            case 'ScopedId': {
+                return {
+                    name: 'ScopedId',
+                    mandatory: [
+                        { name: 'scope', type: 'array' }
+                    ]
+                };
+            }
+            case 'StructTerm': {
+                return {
+                    name: 'StructTerm',
+                    mandatory: [
+                        { name: 'fields', type: 'array' },
+                        { name: 'values', type: 'array' }
+                    ]
+                };
+            }
+            case 'StructType': {
+                return {
+                    name: 'StructType',
+                    mandatory: [
+                        { name: 'fields', type: 'array' },
+                        { name: 'types', type: 'array' }
+                    ]
+                };
+            }
+            case 'TupleTerm': {
+                return {
+                    name: 'TupleTerm',
+                    mandatory: [
+                        { name: 'members', type: 'array' }
                     ]
                 };
             }

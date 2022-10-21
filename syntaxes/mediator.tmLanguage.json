@@ -10,17 +10,7 @@
     },
     {
       "name": "keyword.control.mediator",
-      "match": "\\b(Hello|person)\\b"
-    },
-    {
-      "name": "string.quoted.double.mediator",
-      "begin": "\"",
-      "end": "\""
-    },
-    {
-      "name": "string.quoted.single.mediator",
-      "begin": "'",
-      "end": "'"
+      "match": "\\b(null|struct)\\b"
     }
   ],
   "repository": {
