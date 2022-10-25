@@ -1,0 +1,14 @@
+typedef int as myint;
+
+function <t: type, a3: (int 3.. 4) >name(): int {
+    variables {
+        a: int; b: real; c: char; d: bool;
+        e: int 1.. 2;
+        f: enum {enum1, enum2};
+    }
+    statements {
+        if (true) {
+            a[1] = a[1];
+        }
+    }
+}

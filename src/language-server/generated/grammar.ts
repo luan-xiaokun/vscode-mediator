@@ -16,16 +16,69 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
       "name": "Program",
       "entry": true,
       "definition": {
-        "$type": "Assignment",
-        "feature": "expr",
-        "operator": "+=",
-        "terminal": {
-          "$type": "RuleCall",
-          "rule": {
-            "$refText": "Term"
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "typedefs",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "TypeDef"
+              },
+              "arguments": []
+            }
           },
-          "arguments": []
-        },
+          {
+            "$type": "Assignment",
+            "feature": "constdefs",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ConstDef"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "functions",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "FunctionDefinition"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "automatons",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "AutomatonDefinition"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "systems",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "SystemDefinition"
+              },
+              "arguments": []
+            }
+          }
+        ],
         "cardinality": "*"
       },
       "definesHiddenTokens": false,
@@ -36,30 +89,706 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "Type",
+      "name": "TypeDef",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "TypeDef"
+      },
       "definition": {
         "$type": "Group",
         "elements": [
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "PrimitiveType"
-            },
-            "arguments": []
+            "$type": "Keyword",
+            "value": "typedef"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "type",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Type"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "as"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "alias",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ConstDef",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "ConstDef"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "const"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "expr",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "as"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "alias",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "SystemDefinition",
+      "returnType": {
+        "$refText": "System"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "system"
           },
           {
             "$type": "Group",
             "elements": [
               {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "InitType"
+                "$type": "Keyword",
+                "value": "<"
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "SystemTemplateList"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Keyword",
+                "value": ">"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "ports",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "PortTyping"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "ports",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "PortTyping"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "*"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "internals"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "internals",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "ID"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "internals",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "ID"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "*"
+              },
+              {
+                "$type": "Keyword",
+                "value": ";"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "components"
+              },
+              {
+                "$type": "Keyword",
+                "value": "{"
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "components",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "ComponentTyping"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ";"
+                  }
+                ],
+                "cardinality": "+"
+              },
+              {
+                "$type": "Keyword",
+                "value": "}"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": "connections"
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "connections",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Connection"
+                  },
+                  "arguments": []
                 }
               },
               {
                 "$type": "Keyword",
-                "value": "init"
+                "value": ";"
+              }
+            ],
+            "cardinality": "+"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Connection",
+      "returnType": {
+        "$refText": "Connection"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "InstantiationConnection"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "PortConnection"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "InstantiationConnection",
+      "returnType": {
+        "$refText": "InstantiationConnection"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "entity",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ComponentInstantiation"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "Assignment",
+            "feature": "ports",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ScopedId"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
+              {
+                "$type": "Assignment",
+                "feature": "ports",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "ScopedId"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "PortConnection",
+      "returnType": {
+        "$refText": "PortConnection"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "from",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "ScopedId"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "("
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "from",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "ScopedId"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": ","
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "from",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$refText": "ScopedId"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "cardinality": "*"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ")"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "->"
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "-("
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "options",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "PortConnectionOption"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ")->"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "to",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "ScopedId"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "("
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "to",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "ScopedId"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": ","
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "to",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$refText": "ScopedId"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "cardinality": "*"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ")"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "PortConnectionOption",
+      "returnType": {
+        "$refText": "PortConnectionOption"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "sync",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "Keyword",
+                  "value": "sync"
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "async"
+                }
+              ]
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ","
+          },
+          {
+            "$type": "Assignment",
+            "feature": "cast",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "Keyword",
+                  "value": "broadcast"
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "unicast"
+                }
+              ]
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
+              {
+                "$type": "Keyword",
+                "value": "capacity"
+              },
+              {
+                "$type": "Keyword",
+                "value": "="
+              },
+              {
+                "$type": "Assignment",
+                "feature": "capacity",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Expression"
+                  },
+                  "arguments": []
+                }
               }
             ],
             "cardinality": "?"
@@ -75,37 +804,65 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "ParameterType",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "ParameterType"
+      "name": "AutomatonDefinition",
+      "returnType": {
+        "$refText": "Automaton"
       },
       "definition": {
-        "$type": "Alternatives",
+        "$type": "Group",
         "elements": [
           {
             "$type": "Keyword",
-            "value": "type"
+            "value": "automaton"
           },
           {
             "$type": "Group",
             "elements": [
               {
                 "$type": "Keyword",
-                "value": "func"
+                "value": "<"
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "NonSystemTemplateList"
+                },
+                "arguments": []
               },
               {
                 "$type": "Keyword",
-                "value": "("
+                "value": ">"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
               },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "Group",
+            "elements": [
               {
                 "$type": "Assignment",
-                "feature": "arg_types",
+                "feature": "ports",
                 "operator": "+=",
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "Type"
+                    "$refText": "PortTyping"
                   },
                   "arguments": []
                 }
@@ -119,57 +876,6 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                   },
                   {
                     "$type": "Assignment",
-                    "feature": "arg_types",
-                    "operator": "+=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$refText": "Type"
-                      },
-                      "arguments": []
-                    }
-                  }
-                ],
-                "cardinality": "*"
-              },
-              {
-                "$type": "Keyword",
-                "value": ")"
-              },
-              {
-                "$type": "Keyword",
-                "value": ":"
-              },
-              {
-                "$type": "Assignment",
-                "feature": "return_type",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$refText": "Type"
-                  },
-                  "arguments": []
-                }
-              }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Keyword",
-                "value": "interface"
-              },
-              {
-                "$type": "Keyword",
-                "value": "("
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Assignment",
                     "feature": "ports",
                     "operator": "+=",
                     "terminal": {
@@ -179,35 +885,227 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                       },
                       "arguments": []
                     }
-                  },
-                  {
-                    "$type": "Group",
-                    "elements": [
-                      {
-                        "$type": "Keyword",
-                        "value": ","
-                      },
-                      {
-                        "$type": "Assignment",
-                        "feature": "ports",
-                        "operator": "+=",
-                        "terminal": {
-                          "$type": "RuleCall",
-                          "rule": {
-                            "$refText": "PortTyping"
-                          },
-                          "arguments": []
-                        }
-                      }
-                    ],
-                    "cardinality": "*"
                   }
                 ],
-                "cardinality": "?"
+                "cardinality": "*"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "variables"
               },
               {
                 "$type": "Keyword",
-                "value": ")"
+                "value": "{"
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "localvars",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "MultiVariableTyping"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ";"
+                  }
+                ],
+                "cardinality": "+"
+              },
+              {
+                "$type": "Keyword",
+                "value": "}"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "initial"
+              },
+              {
+                "$type": "Keyword",
+                "value": "{"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "initial",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Statement"
+                  },
+                  "arguments": []
+                },
+                "cardinality": "+"
+              },
+              {
+                "$type": "Keyword",
+                "value": "}"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": "transitions"
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "transitions",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Transition"
+              },
+              "arguments": []
+            },
+            "cardinality": "+"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Transition",
+      "returnType": {
+        "$refText": "Transition"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "SingleTransition"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "GroupTransition"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "SingleTransition",
+      "returnType": {
+        "$refText": "SingleTransition"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "guard",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "->"
+          },
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "statements",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "StatementOrSynchronization"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "{"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "statements",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "StatementOrSynchronization"
+                      },
+                      "arguments": []
+                    },
+                    "cardinality": "+"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "}"
+                  }
+                ]
               }
             ]
           }
@@ -222,35 +1120,1405 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "PortTyping",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "PortTyping"
+      "name": "GroupTransition",
+      "returnType": {
+        "$refText": "GroupTransition"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "group"
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "transitions",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "SingleTransition"
+              },
+              "arguments": []
+            },
+            "cardinality": "+"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "StatementOrSynchronization",
+      "returnType": {
+        "$refText": "StatementOrSynchronization"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "Statement"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "Synchronization"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "FunctionDefinition",
+      "returnType": {
+        "$refText": "Function"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "function"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "<"
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "NonSystemTemplateList"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Keyword",
+                "value": ">"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "arguments",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "VariableTyping"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "arguments",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "VariableTyping"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "*"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          },
+          {
+            "$type": "Keyword",
+            "value": ":"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "returntype",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Type"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "variables"
+              },
+              {
+                "$type": "Keyword",
+                "value": "{"
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "localvars",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "MultiVariableTyping"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ";"
+                  }
+                ],
+                "cardinality": "+"
+              },
+              {
+                "$type": "Keyword",
+                "value": "}"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": "statements"
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "statements",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "FunctionStatement"
+              },
+              "arguments": []
+            },
+            "cardinality": "+"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "NonSystemTemplateType",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "Type"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "NonInterfaceParameterType"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "NonSystemTemplateTyping",
+      "returnType": {
+        "$refText": "NonSystemTemplateTyping"
       },
       "definition": {
         "$type": "Group",
         "elements": [
           {
             "$type": "Assignment",
-            "feature": "direction",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ":"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "typing",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "NonSystemTemplateType"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "NonSystemTemplateList",
+      "fragment": true,
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "templates",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "NonSystemTemplateTyping"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
+              {
+                "$type": "Assignment",
+                "feature": "templates",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "NonSystemTemplateTyping"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "SystemTemplateType",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "Type"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "ParameterType"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "SystemTemplateTyping",
+      "returnType": {
+        "$refText": "SystemTemplateTyping"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ":"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "typing",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "SystemTemplateType"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "SystemTemplateList",
+      "fragment": true,
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "templates",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "SystemTemplateTyping"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
+              {
+                "$type": "Assignment",
+                "feature": "templates",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "SystemTemplateTyping"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Statement",
+      "returnType": {
+        "$refText": "Statement"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": ";"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "AssignmentStatement"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "ConditionalStatement"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "LoopStatement"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "AssignmentStatement",
+      "returnType": {
+        "$refText": "Assignment"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "left",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "assign",
             "operator": "=",
             "terminal": {
               "$type": "Alternatives",
               "elements": [
                 {
                   "$type": "Keyword",
-                  "value": "in"
+                  "value": "="
                 },
                 {
                   "$type": "Keyword",
-                  "value": "out"
+                  "value": "+="
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "-="
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "*="
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "/="
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "%="
                 }
               ]
             }
           },
           {
             "$type": "Assignment",
-            "feature": "vtype",
+            "feature": "right",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "AssignmentUpdate",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "left",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "assign",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "Keyword",
+                  "value": "="
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "+="
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "-="
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "*="
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "/="
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "%="
+                }
+              ]
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "right",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ConditionalStatement",
+      "returnType": {
+        "$refText": "Conditional"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "if"
+          },
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "Assignment",
+            "feature": "condition",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          },
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "then",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Statement"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "{"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "then",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Statement"
+                      },
+                      "arguments": []
+                    },
+                    "cardinality": "+"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "else"
+              },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "else",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Statement"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "{"
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "else",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$refText": "Statement"
+                          },
+                          "arguments": []
+                        },
+                        "cardinality": "+"
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": "}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "LoopStatement",
+      "returnType": {
+        "$refText": "Loop"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "for"
+          },
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "Keyword",
+            "value": "let"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "declaration",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "AssignmentUpdate"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "condition",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "LogicalOrExpression"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "update",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "AssignmentUpdate"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          },
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "body",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Statement"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "{"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "body",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Statement"
+                      },
+                      "arguments": []
+                    },
+                    "cardinality": "+"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "FunctionStatement",
+      "returnType": {
+        "$refText": "FunctionStatement"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": ";"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "AssignmentStatement"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "FunctionReturnStatement"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "FunctionConditionalStatement"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "FunctionLoopStatement"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "FunctionReturnStatement",
+      "returnType": {
+        "$refText": "FunctionReturn"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "return"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "value",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "FunctionConditionalStatement",
+      "returnType": {
+        "$refText": "FunctionConditional"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "if"
+          },
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "Assignment",
+            "feature": "condition",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          },
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "then",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "FunctionStatement"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "{"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "then",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "FunctionStatement"
+                      },
+                      "arguments": []
+                    },
+                    "cardinality": "+"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "else"
+              },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "else",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "FunctionStatement"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": "{"
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "else",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$refText": "FunctionStatement"
+                          },
+                          "arguments": []
+                        },
+                        "cardinality": "+"
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": "}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "FunctionLoopStatement",
+      "returnType": {
+        "$refText": "FunctionLoop"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "for"
+          },
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "Keyword",
+            "value": "let"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "declaration",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "AssignmentUpdate"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "condition",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "LogicalOrExpression"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "update",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "AssignmentUpdate"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          },
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "body",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "FunctionStatement"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "{"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "body",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "FunctionStatement"
+                      },
+                      "arguments": []
+                    },
+                    "cardinality": "+"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Synchronization",
+      "returnType": {
+        "$refText": "Synchronization"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "sync"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "ports",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
+              {
+                "$type": "Assignment",
+                "feature": "ports",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "ID"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "VariableTyping",
+      "returnType": {
+        "$refText": "VariableTyping"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ":"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "typing",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
@@ -271,164 +2539,154 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "PrimitiveType",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "PrimitiveType"
+      "name": "MultiVariableTyping",
+      "returnType": {
+        "$refText": "MultiVariableTyping"
       },
       "definition": {
-        "$type": "Alternatives",
+        "$type": "Group",
         "elements": [
           {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "IntType"
-                }
+            "$type": "Assignment",
+            "feature": "names",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
               },
-              {
-                "$type": "Keyword",
-                "value": "int"
-              }
-            ]
+              "arguments": []
+            }
           },
           {
             "$type": "Group",
             "elements": [
               {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "BoundedIntType"
-                }
-              },
-              {
                 "$type": "Keyword",
-                "value": "int"
+                "value": ","
               },
               {
                 "$type": "Assignment",
-                "feature": "lbound",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$refText": "Term"
-                  },
-                  "arguments": []
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": ".."
-              },
-              {
-                "$type": "Assignment",
-                "feature": "ubound",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$refText": "Term"
-                  },
-                  "arguments": []
-                }
-              }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "RealType"
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": "real"
-              }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "CharType"
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": "char"
-              }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "BoolType"
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": "bool"
-              }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "NullType"
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": "NULL"
-              }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "EnumType"
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": "enum"
-              },
-              {
-                "$type": "Keyword",
-                "value": "{"
-              },
-              {
-                "$type": "Assignment",
-                "feature": "members",
+                "feature": "names",
                 "operator": "+=",
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
                     "$refText": "ID"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Keyword",
+            "value": ":"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "typing",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Type"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "PortTyping",
+      "returnType": {
+        "$refText": "PortTyping"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ":"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "typing",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "PortType"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ComponentInstantiation",
+      "returnType": {
+        "$refText": "ComponentInstantiation"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "<"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "templates",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "AdditiveExpression"
                   },
                   "arguments": []
                 }
@@ -442,12 +2700,12 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                   },
                   {
                     "$type": "Assignment",
-                    "feature": "members",
+                    "feature": "templates",
                     "operator": "+=",
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$refText": "ID"
+                        "$refText": "AdditiveExpression"
                       },
                       "arguments": []
                     }
@@ -457,71 +2715,10 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
               },
               {
                 "$type": "Keyword",
-                "value": "}"
+                "value": ">"
               }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "StructType"
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": "struct"
-              },
-              {
-                "$type": "Keyword",
-                "value": "{"
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Assignment",
-                    "feature": "fields",
-                    "operator": "+=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$refText": "ID"
-                      },
-                      "arguments": []
-                    }
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": ":"
-                  },
-                  {
-                    "$type": "Assignment",
-                    "feature": "types",
-                    "operator": "+=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$refText": "Type"
-                      },
-                      "arguments": []
-                    }
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": ";"
-                  }
-                ],
-                "cardinality": "+"
-              },
-              {
-                "$type": "Keyword",
-                "value": "}"
-              }
-            ]
+            ],
+            "cardinality": "?"
           }
         ]
       },
@@ -534,7 +2731,787 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "Term",
+      "name": "ComponentTyping",
+      "returnType": {
+        "$refText": "ComponentTyping"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "names",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
+              {
+                "$type": "Assignment",
+                "feature": "names",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "ID"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Keyword",
+            "value": ":"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "typing",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ComponentInstantiation"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Expression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "LogicalOrExpression"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "ConditionalExpression"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "?"
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "Expression"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Keyword",
+                "value": ":"
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "Expression"
+                },
+                "arguments": []
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "LogicalOrExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "LogicalAndExpression"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "BinaryExpression"
+                },
+                "feature": "left",
+                "operator": "="
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operator",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "||"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "right",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "LogicalAndExpression"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "LogicalAndExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "LogicalNotExpression"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "BinaryExpression"
+                },
+                "feature": "left",
+                "operator": "="
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operator",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "&&"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "right",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "LogicalNotExpression"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "LogicalNotExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "PrefixExpression"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operator",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "!"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operand",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "LogicalNotExpression"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "ComparisonExpression"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ComparisonExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "EqualityExpression"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "BinaryExpression"
+                },
+                "feature": "left",
+                "operator": "="
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operator",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "Keyword",
+                      "value": "<"
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": ">"
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "<="
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": ">="
+                    }
+                  ]
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "right",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "EqualityExpression"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "EqualityExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "AdditiveExpression"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "BinaryExpression"
+                },
+                "feature": "left",
+                "operator": "="
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operator",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "Keyword",
+                      "value": "=="
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "!="
+                    }
+                  ]
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "right",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "AdditiveExpression"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "AdditiveExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "MultiplicativeExpression"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "BinaryExpression"
+                },
+                "feature": "left",
+                "operator": "="
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operator",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "Keyword",
+                      "value": "+"
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "-"
+                    }
+                  ]
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "right",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "MultiplicativeExpression"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "MultiplicativeExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "PrefixExpression"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "BinaryExpression"
+                },
+                "feature": "left",
+                "operator": "="
+              },
+              {
+                "$type": "Assignment",
+                "feature": "oeprator",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "Keyword",
+                      "value": "*"
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "/"
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "%"
+                    }
+                  ]
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "right",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "PrefixExpression"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "PrefixExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "PrefixExpression"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operator",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "Keyword",
+                      "value": "+"
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "-"
+                    }
+                  ]
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operand",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "PrefixExpression"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "ExponentExpression"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ExponentExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "IndexingExpression"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "BinaryExpression"
+                },
+                "feature": "left",
+                "operator": "="
+              },
+              {
+                "$type": "Assignment",
+                "feature": "operator",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "**"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "right",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "IndexingExpression"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "IndexingExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "PrimaryExpression"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "IndexingExpression"
+                },
+                "feature": "base",
+                "operator": "="
+              },
+              {
+                "$type": "Keyword",
+                "value": "["
+              },
+              {
+                "$type": "Assignment",
+                "feature": "index",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Expression"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "]"
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "PrimaryExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
       "definition": {
         "$type": "Alternatives",
         "elements": [
@@ -560,28 +3537,27 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "elements": [
                   {
                     "$type": "Action",
-                    "inferredType": {
-                      "$type": "InferredType",
-                      "name": "PortVar"
+                    "type": {
+                      "$refText": "FunctionCallExpression"
                     },
-                    "feature": "port",
+                    "feature": "name",
                     "operator": "="
                   },
                   {
                     "$type": "Keyword",
-                    "value": "."
+                    "value": "("
                   },
                   {
-                    "$type": "Assignment",
-                    "feature": "field",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$refText": "PORTFIELD"
-                      },
-                      "arguments": []
-                    }
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$refText": "ArgumentSequence"
+                    },
+                    "arguments": [],
+                    "cardinality": "?"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ")"
                   }
                 ],
                 "cardinality": "?"
@@ -591,14 +3567,21 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
           {
             "$type": "RuleCall",
             "rule": {
-              "$refText": "StructTerm"
+              "$refText": "StructExpression"
             },
             "arguments": []
           },
           {
             "$type": "RuleCall",
             "rule": {
-              "$refText": "BracketTerm"
+              "$refText": "ListExpression"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "BracketExpression"
             },
             "arguments": []
           }
@@ -613,86 +3596,22 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "BracketTerm",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "Term"
-      },
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Keyword",
-            "value": "("
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "Term"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "TupleTerm"
-                },
-                "feature": "members",
-                "operator": "+="
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Keyword",
-                    "value": ","
-                  },
-                  {
-                    "$type": "Assignment",
-                    "feature": "members",
-                    "operator": "+=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$refText": "Term"
-                      },
-                      "arguments": []
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "$type": "Keyword",
-            "value": ")"
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "Terms",
+      "name": "ArgumentSequence",
       "fragment": true,
       "definition": {
         "$type": "Group",
         "elements": [
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "Term"
-            },
-            "arguments": []
+            "$type": "Assignment",
+            "feature": "arguments",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
           },
           {
             "$type": "Group",
@@ -702,14 +3621,19 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "value": ","
               },
               {
-                "$type": "RuleCall",
-                "rule": {
-                  "$refText": "Term"
-                },
-                "arguments": []
+                "$type": "Assignment",
+                "feature": "arguments",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Expression"
+                  },
+                  "arguments": []
+                }
               }
             ],
-            "cardinality": "+"
+            "cardinality": "*"
           }
         ]
       },
@@ -721,10 +3645,9 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "StructTerm",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "StructTerm"
+      "name": "StructExpression",
+      "returnType": {
+        "$refText": "StructExpression"
       },
       "definition": {
         "$type": "Group",
@@ -738,8 +3661,40 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "value": "{"
           },
           {
+            "$type": "Assignment",
+            "feature": "fields",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "="
+          },
+          {
+            "$type": "Assignment",
+            "feature": "values",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
+          },
+          {
             "$type": "Group",
             "elements": [
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
               {
                 "$type": "Assignment",
                 "feature": "fields",
@@ -763,51 +3718,13 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "Term"
+                    "$refText": "Expression"
                   },
                   "arguments": []
                 }
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Keyword",
-                    "value": ","
-                  },
-                  {
-                    "$type": "Assignment",
-                    "feature": "fields",
-                    "operator": "+=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$refText": "ID"
-                      },
-                      "arguments": []
-                    }
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": "="
-                  },
-                  {
-                    "$type": "Assignment",
-                    "feature": "values",
-                    "operator": "+=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$refText": "Term"
-                      },
-                      "arguments": []
-                    }
-                  }
-                ],
-                "cardinality": "*"
               }
             ],
-            "cardinality": "?"
+            "cardinality": "*"
           },
           {
             "$type": "Keyword",
@@ -824,48 +3741,266 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
+      "name": "ListExpression",
+      "returnType": {
+        "$refText": "ListExpression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "["
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "values",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Expression"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "values",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Expression"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "*"
+              },
+              {
+                "$type": "Keyword",
+                "value": ",",
+                "cardinality": "?"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": "]"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "BracketExpression",
+      "returnType": {
+        "$refText": "Expression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "Expression"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "TupleExpression"
+                },
+                "feature": "values",
+                "operator": "+="
+              },
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
+              {
+                "$type": "Assignment",
+                "feature": "values",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Expression"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Keyword",
+            "value": ",",
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
       "name": "Literal",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "Literal"
+      "returnType": {
+        "$refText": "Literal"
       },
       "definition": {
         "$type": "Alternatives",
         "elements": [
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "IntLiteral"
-            },
-            "arguments": []
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "IntLiteral"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "value",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "INT"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
           },
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "RealLiteral"
-            },
-            "arguments": []
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "RealLiteral"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "value",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "REAL"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
           },
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "CharLiteral"
-            },
-            "arguments": []
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "CharLiteral"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "value",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "CHAR"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
           },
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "BoolLiteral"
-            },
-            "arguments": []
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "BoolLiteral"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "value",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "BOOL"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
           },
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "NullLiteral"
-            },
-            "arguments": []
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "NullLiteral"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "value",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "NULL"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
           }
         ]
       },
@@ -879,9 +4014,8 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     {
       "$type": "ParserRule",
       "name": "ScopedId",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "ScopedId"
+      "returnType": {
+        "$refText": "ScopedId"
       },
       "definition": {
         "$type": "Group",
@@ -931,179 +4065,763 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "IntLiteral",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "IntLiteral"
+      "name": "Type",
+      "returnType": {
+        "$refText": "Type"
       },
       "definition": {
-        "$type": "Assignment",
-        "feature": "value",
-        "operator": "=",
-        "terminal": {
-          "$type": "RuleCall",
-          "rule": {
-            "$refText": "INT"
-          },
-          "arguments": []
-        }
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "RealLiteral",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "RealLiteral"
-      },
-      "definition": {
-        "$type": "Assignment",
-        "feature": "value",
-        "operator": "=",
-        "terminal": {
-          "$type": "RuleCall",
-          "rule": {
-            "$refText": "REAL"
-          },
-          "arguments": []
-        }
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "CharLiteral",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "CharLiteral"
-      },
-      "definition": {
-        "$type": "Assignment",
-        "feature": "value",
-        "operator": "=",
-        "terminal": {
-          "$type": "RuleCall",
-          "rule": {
-            "$refText": "CHAR"
-          },
-          "arguments": []
-        }
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "BoolLiteral",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "BoolLiteral"
-      },
-      "definition": {
-        "$type": "Assignment",
-        "feature": "value",
-        "operator": "=",
-        "terminal": {
-          "$type": "RuleCall",
-          "rule": {
-            "$refText": "BOOL"
-          },
-          "arguments": []
-        }
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "NullLiteral",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "NullLiteral"
-      },
-      "definition": {
-        "$type": "Assignment",
-        "feature": "value",
-        "operator": "=",
-        "terminal": {
-          "$type": "Keyword",
-          "value": "null"
-        }
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "INT",
-      "type": {
-        "$type": "ReturnType",
-        "name": "number"
-      },
-      "definition": {
-        "$type": "TerminalAlternatives",
+        "$type": "Group",
         "elements": [
           {
-            "$type": "TerminalAlternatives",
+            "$type": "Alternatives",
             "elements": [
               {
-                "$type": "TerminalAlternatives",
-                "elements": [
-                  {
-                    "$type": "TerminalRuleCall",
-                    "rule": {
-                      "$refText": "BINSEQ"
-                    }
-                  },
-                  {
-                    "$type": "TerminalRuleCall",
-                    "rule": {
-                      "$refText": "OCTSEQ"
-                    }
-                  }
-                ]
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "PrimitiveType"
+                },
+                "arguments": []
               },
               {
-                "$type": "TerminalRuleCall",
+                "$type": "RuleCall",
                 "rule": {
-                  "$refText": "HEXSEQ"
-                }
+                  "$refText": "EnumType"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "StructType"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "BracketType"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "ScopedId"
+                },
+                "arguments": []
               }
             ]
           },
           {
-            "$type": "TerminalRuleCall",
-            "rule": {
-              "$refText": "DECSEQ"
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "ListType"
+                },
+                "feature": "base",
+                "operator": "="
+              },
+              {
+                "$type": "Keyword",
+                "value": "["
+              },
+              {
+                "$type": "Assignment",
+                "feature": "capacity",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Expression"
+                  },
+                  "arguments": []
+                },
+                "cardinality": "?"
+              },
+              {
+                "$type": "Keyword",
+                "value": "]"
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "UnionType"
+                },
+                "feature": "types",
+                "operator": "+="
+              },
+              {
+                "$type": "Keyword",
+                "value": "|"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "types",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Type"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "PrimitiveType",
+      "returnType": {
+        "$refText": "PrimitiveType"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "BoundedIntType"
+                }
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "BoundedIntType"
+                },
+                "arguments": []
+              }
+            ]
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "Keyword",
+                  "value": "int"
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "real"
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "char"
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "bool"
+                },
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "NULL"
+                  },
+                  "arguments": []
+                }
+              ]
             }
           }
         ]
       },
+      "definesHiddenTokens": false,
+      "entry": false,
       "fragment": false,
-      "hidden": false
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "BoundedIntType",
+      "returnType": {
+        "$refText": "BoundedIntType"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "int"
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "lbound",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ".."
+          },
+          {
+            "$type": "Assignment",
+            "feature": "ubound",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Expression"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "EnumType",
+      "returnType": {
+        "$refText": "EnumType"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "enum"
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "members",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
+              {
+                "$type": "Assignment",
+                "feature": "members",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "ID"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "StructType",
+      "returnType": {
+        "$refText": "StructType"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "struct"
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "fields",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ID"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ":"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "types",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Type"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
+              {
+                "$type": "Assignment",
+                "feature": "fields",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "ID"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": ":"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "types",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Type"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "BracketType",
+      "returnType": {
+        "$refText": "Type"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "Type"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "TupleType"
+                },
+                "feature": "types",
+                "operator": "+="
+              },
+              {
+                "$type": "Keyword",
+                "value": ","
+              },
+              {
+                "$type": "Assignment",
+                "feature": "types",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Type"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "PortType",
+      "returnType": {
+        "$refText": "PortType"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "direction",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "Keyword",
+                  "value": "in"
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "out"
+                }
+              ]
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "typing",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Type"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ParameterType",
+      "returnType": {
+        "$refText": "ParameterType"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "AbstractType"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "FunctionType"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "InterfaceType"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "NonInterfaceParameterType",
+      "returnType": {
+        "$refText": "NonInterfaceParameterType"
+      },
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "AbstractType"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "FunctionType"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "AbstractType",
+      "dataType": "string",
+      "definition": {
+        "$type": "Keyword",
+        "value": "type"
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "FunctionType",
+      "returnType": {
+        "$refText": "FunctionType"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "func"
+          },
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "argtypes",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Type"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "argtypes",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Type"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "*"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          },
+          {
+            "$type": "Keyword",
+            "value": ":"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "returntype",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "Type"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "InterfaceType",
+      "returnType": {
+        "$refText": "InterfaceType"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "interface"
+          },
+          {
+            "$type": "Keyword",
+            "value": "("
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "porttypes",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "PortType"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "porttypes",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "PortType"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ],
+                "cardinality": "*"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": ")"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
     },
     {
       "$type": "TerminalRule",
@@ -1149,6 +4867,55 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 }
               }
             ]
+          }
+        ]
+      },
+      "fragment": false,
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "INT",
+      "type": {
+        "$type": "ReturnType",
+        "name": "number"
+      },
+      "definition": {
+        "$type": "TerminalAlternatives",
+        "elements": [
+          {
+            "$type": "TerminalAlternatives",
+            "elements": [
+              {
+                "$type": "TerminalAlternatives",
+                "elements": [
+                  {
+                    "$type": "TerminalRuleCall",
+                    "rule": {
+                      "$refText": "BINSEQ"
+                    }
+                  },
+                  {
+                    "$type": "TerminalRuleCall",
+                    "rule": {
+                      "$refText": "OCTSEQ"
+                    }
+                  }
+                ]
+              },
+              {
+                "$type": "TerminalRuleCall",
+                "rule": {
+                  "$refText": "HEXSEQ"
+                }
+              }
+            ]
+          },
+          {
+            "$type": "TerminalRuleCall",
+            "rule": {
+              "$refText": "DECSEQ"
+            }
           }
         ]
       },
@@ -1260,41 +5027,17 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "TerminalRule",
-      "name": "PORTFIELD",
+      "name": "NULL",
       "type": {
         "$type": "ReturnType",
         "name": "string"
       },
       "definition": {
-        "$type": "TerminalAlternatives",
-        "elements": [
-          {
-            "$type": "TerminalAlternatives",
-            "elements": [
-              {
-                "$type": "CharacterRange",
-                "left": {
-                  "$type": "Keyword",
-                  "value": "value"
-                }
-              },
-              {
-                "$type": "CharacterRange",
-                "left": {
-                  "$type": "Keyword",
-                  "value": "reqRead"
-                }
-              }
-            ]
-          },
-          {
-            "$type": "CharacterRange",
-            "left": {
-              "$type": "Keyword",
-              "value": "reqWrite"
-            }
-          }
-        ]
+        "$type": "CharacterRange",
+        "left": {
+          "$type": "Keyword",
+          "value": "null"
+        }
       },
       "fragment": false,
       "hidden": false
@@ -1347,14 +5090,2356 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
   "interfaces": [
     {
       "$type": "Interface",
-      "name": "LiteralType",
-      "attributes": [],
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "name",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "SystemTemplateTyping"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "templates",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "PortTyping"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "ports",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "internals",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "ComponentTyping"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "components",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Connection"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "connections",
+          "isOptional": false
+        }
+      ],
+      "name": "System",
       "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "ComponentInstantiation"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "entity",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "ScopedId"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "ports",
+          "isOptional": false
+        }
+      ],
+      "name": "InstantiationConnection",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "ScopedId"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "from",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "ScopedId"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "to",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "PortConnectionOption"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "options",
+          "isOptional": true
+        }
+      ],
+      "name": "PortConnection",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "sync"
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "async"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "sync",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "broadcast"
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "unicast"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "cast",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "capacity",
+          "isOptional": true
+        }
+      ],
+      "name": "PortConnectionOption",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "name",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "NonSystemTemplateTyping"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "templates",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "PortTyping"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "ports",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "MultiVariableTyping"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "localvars",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Statement"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "initial",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Transition"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "transitions",
+          "isOptional": false
+        }
+      ],
+      "name": "Automaton",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "guard",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "StatementOrSynchronization"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "statements",
+          "isOptional": false
+        }
+      ],
+      "name": "SingleTransition",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "SingleTransition"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "transitions",
+          "isOptional": false
+        }
+      ],
+      "name": "GroupTransition",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "name",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "NonSystemTemplateTyping"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "templates",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "VariableTyping"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "arguments",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Type"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "returntype",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "MultiVariableTyping"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "localvars",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "FunctionStatement"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "statements",
+          "isOptional": false
+        }
+      ],
+      "name": "Function",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "name",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "NonSystemTemplateType"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "typing",
+          "isOptional": false
+        }
+      ],
+      "name": "NonSystemTemplateTyping",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "name",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "SystemTemplateType"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "typing",
+          "isOptional": false
+        }
+      ],
+      "name": "SystemTemplateTyping",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "left",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "="
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "+="
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "-="
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "*="
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "/="
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "%="
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "assign",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "right",
+          "isOptional": false
+        }
+      ],
+      "name": "Assignment",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "condition",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Statement"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "then",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Statement"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "else",
+          "isOptional": false
+        }
+      ],
+      "name": "Conditional",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "AssignmentUpdate"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "declaration",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "condition",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "AssignmentUpdate"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "update",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Statement"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "body",
+          "isOptional": false
+        }
+      ],
+      "name": "Loop",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "value",
+          "isOptional": false
+        }
+      ],
+      "name": "FunctionReturn",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "condition",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "FunctionStatement"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "then",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "FunctionStatement"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "else",
+          "isOptional": false
+        }
+      ],
+      "name": "FunctionConditional",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "AssignmentUpdate"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "declaration",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "condition",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "AssignmentUpdate"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "update",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "FunctionStatement"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "body",
+          "isOptional": false
+        }
+      ],
+      "name": "FunctionLoop",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "ports",
+          "isOptional": false
+        }
+      ],
+      "name": "Synchronization",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "name",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Type"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "typing",
+          "isOptional": false
+        }
+      ],
+      "name": "VariableTyping",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "names",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Type"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "typing",
+          "isOptional": false
+        }
+      ],
+      "name": "MultiVariableTyping",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "name",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "PortType"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "typing",
+          "isOptional": false
+        }
+      ],
+      "name": "PortTyping",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "name",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "ParameterType"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "typing",
+          "isOptional": false
+        }
+      ],
+      "name": "TemplateParameterTyping",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "name",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "templates",
+          "isOptional": false
+        }
+      ],
+      "name": "ComponentInstantiation",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "names",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "ComponentInstantiation"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "typing",
+          "isOptional": false
+        }
+      ],
+      "name": "ComponentTyping",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "condition",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "then",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "else",
+          "isOptional": false
+        }
+      ],
+      "name": "ConditionalExpression",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "left",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "operator",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "right",
+          "isOptional": false
+        }
+      ],
+      "name": "BinaryExpression",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "operator",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "operand",
+          "isOptional": false
+        }
+      ],
+      "name": "PrefixExpression",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "base",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "index",
+          "isOptional": false
+        }
+      ],
+      "name": "IndexingExpression",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "ScopedId"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "name",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Type"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "typetemplates",
+          "isOptional": true
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "exprtemplates",
+          "isOptional": true
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "arguments",
+          "isOptional": false
+        }
+      ],
+      "name": "FunctionCallExpression",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "fields",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "values",
+          "isOptional": false
+        }
+      ],
+      "name": "StructExpression",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "values",
+          "isOptional": false
+        }
+      ],
+      "name": "IterableExpression",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "name": "ListExpression",
+      "superTypes": [
+        {
+          "$refText": "IterableExpression"
+        }
+      ],
+      "attributes": []
+    },
+    {
+      "$type": "Interface",
+      "name": "TupleExpression",
+      "superTypes": [
+        {
+          "$refText": "IterableExpression"
+        }
+      ],
+      "attributes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "number",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "value",
+          "isOptional": false
+        }
+      ],
+      "name": "IntLiteral",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "number",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "value",
+          "isOptional": false
+        }
+      ],
+      "name": "RealLiteral",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "value",
+          "isOptional": false
+        }
+      ],
+      "name": "CharLiteral",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "boolean",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "value",
+          "isOptional": false
+        }
+      ],
+      "name": "BoolLiteral",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "value",
+          "isOptional": false
+        }
+      ],
+      "name": "NullLiteral",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "scope",
+          "isOptional": true
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "identifier",
+          "isOptional": false
+        }
+      ],
+      "name": "ScopedId",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "int"
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "real"
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "char"
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "bool"
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "name",
+          "isOptional": false
+        }
+      ],
+      "name": "PrimitiveType",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "lbound",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "ubound",
+          "isOptional": false
+        }
+      ],
+      "name": "BoundedIntType",
+      "superTypes": [
+        {
+          "$refText": "PrimitiveType"
+        }
+      ]
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "members",
+          "isOptional": false
+        }
+      ],
+      "name": "EnumType",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "primitiveType": "string",
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "fields",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Type"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "types",
+          "isOptional": false
+        }
+      ],
+      "name": "StructType",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Type"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "base",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Expression"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "capacity",
+          "isOptional": true
+        }
+      ],
+      "name": "ListType",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Type"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "types",
+          "isOptional": false
+        }
+      ],
+      "name": "MultiType",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "name": "TupleType",
+      "superTypes": [
+        {
+          "$refText": "MultiType"
+        }
+      ],
+      "attributes": []
+    },
+    {
+      "$type": "Interface",
+      "name": "UnionType",
+      "superTypes": [
+        {
+          "$refText": "MultiType"
+        }
+      ],
+      "attributes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "in"
+              },
+              "isArray": false,
+              "isRef": false
+            },
+            {
+              "$type": "AtomType",
+              "keywordType": {
+                "$type": "Keyword",
+                "value": "out"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "direction",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Type"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "typing",
+          "isOptional": false
+        }
+      ],
+      "name": "PortType",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Type"
+              },
+              "isArray": false,
+              "isRef": false
+            }
+          ],
+          "name": "returntype",
+          "isOptional": false
+        },
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "Type"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "argtypes",
+          "isOptional": false
+        }
+      ],
+      "name": "FunctionType",
+      "superTypes": []
+    },
+    {
+      "$type": "Interface",
+      "attributes": [
+        {
+          "$type": "TypeAttribute",
+          "typeAlternatives": [
+            {
+              "$type": "AtomType",
+              "refType": {
+                "$refText": "PortType"
+              },
+              "isArray": true,
+              "isRef": false
+            }
+          ],
+          "name": "porttypes",
+          "isOptional": false
+        }
+      ],
+      "name": "InterfaceType",
+      "superTypes": []
+    }
+  ],
+  "types": [
+    {
+      "$type": "Type",
+      "typeAlternatives": [
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "InstantiationConnection"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "PortConnection"
+          },
+          "isArray": false,
+          "isRef": false
+        }
+      ],
+      "name": "Connection"
+    },
+    {
+      "$type": "Type",
+      "typeAlternatives": [
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "SingleTransition"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "GroupTransition"
+          },
+          "isArray": false,
+          "isRef": false
+        }
+      ],
+      "name": "Transition"
+    },
+    {
+      "$type": "Type",
+      "typeAlternatives": [
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "Statement"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "Synchronization"
+          },
+          "isArray": false,
+          "isRef": false
+        }
+      ],
+      "name": "StatementOrSynchronization"
+    },
+    {
+      "$type": "Type",
+      "typeAlternatives": [
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "Assignment"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "Conditional"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "Loop"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "keywordType": {
+            "$type": "Keyword",
+            "value": ";"
+          },
+          "isArray": false,
+          "isRef": false
+        }
+      ],
+      "name": "Statement"
+    },
+    {
+      "$type": "Type",
+      "typeAlternatives": [
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "Assignment"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "FunctionReturn"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "FunctionConditional"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "FunctionLoop"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "keywordType": {
+            "$type": "Keyword",
+            "value": ";"
+          },
+          "isArray": false,
+          "isRef": false
+        }
+      ],
+      "name": "FunctionStatement"
+    },
+    {
+      "$type": "Type",
+      "typeAlternatives": [
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "ConditionalExpression"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "BinaryExpression"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "PrefixExpression"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "IndexingExpression"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "FunctionCallExpression"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "Literal"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "ScopedId"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "StructExpression"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "ListExpression"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "TupleExpression"
+          },
+          "isArray": false,
+          "isRef": false
+        }
+      ],
+      "name": "Expression"
+    },
+    {
+      "$type": "Type",
+      "typeAlternatives": [
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "IntLiteral"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "RealLiteral"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "CharLiteral"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "BoolLiteral"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "NullLiteral"
+          },
+          "isArray": false,
+          "isRef": false
+        }
+      ],
+      "name": "Literal"
+    },
+    {
+      "$type": "Type",
+      "typeAlternatives": [
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "PrimitiveType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "EnumType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "StructType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "ListType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "TupleType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "UnionType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "ScopedId"
+          },
+          "isArray": false,
+          "isRef": false
+        }
+      ],
+      "name": "Type"
+    },
+    {
+      "$type": "Type",
+      "typeAlternatives": [
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "AbstractType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "FunctionType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "InterfaceType"
+          },
+          "isArray": false,
+          "isRef": false
+        }
+      ],
+      "name": "ParameterType"
+    },
+    {
+      "$type": "Type",
+      "typeAlternatives": [
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "AbstractType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "FunctionType"
+          },
+          "isArray": false,
+          "isRef": false
+        }
+      ],
+      "name": "NonInterfaceParameterType"
     }
   ],
   "definesHiddenTokens": false,
   "hiddenTokens": [],
   "imports": [],
-  "types": [],
   "usedGrammars": []
 }`));

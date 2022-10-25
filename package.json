@@ -29,10 +29,31 @@
                 "scopeName": "source.mediator",
                 "path": "./syntaxes/mediator.tmLanguage.json"
             }
-        ]
+        ],
+        "commands": [
+            {
+                "command": "mediator.generate",
+                "title": "Mediator Extension Generate"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "mediator.generate",
+                "key": "ctrl+shift+b",
+                "mac": "cmd+shift+b"
+            }
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "mediator.generate",
+                    "when": "editorLangId == mediator"
+                }
+            ]
+        }
     },
     "activationEvents": [
-        "onLanguage:mediator"
+        "onLanguage:mediator", "onCommand:mediator.generate"
     ],
     "files": [
         "bin",

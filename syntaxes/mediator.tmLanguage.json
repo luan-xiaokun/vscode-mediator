@@ -10,7 +10,7 @@
     },
     {
       "name": "keyword.control.mediator",
-      "match": "\\b(null|struct)\\b"
+      "match": "\\b(as|async|automaton|bool|broadcast|capacity|char|components|connections|const|else|enum|for|func|function|group|if|in|initial|int|interface|internals|let|out|real|return|statements|struct|sync|system|transitions|type|typedef|unicast|variables)\\b"
     }
   ],
   "repository": {

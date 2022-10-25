@@ -1,14 +1,23 @@
 import * as vscode from 'vscode';
+import { commands } from 'vscode';
 import * as path from 'path';
 import {
     LanguageClient, LanguageClientOptions, ServerOptions, TransportKind
 } from 'vscode-languageclient/node';
+import { NodeFileSystem } from 'langium/node';
+import { MediatorServices, createMediatorServices } from './language-server/mediator-module';
 
 let client: LanguageClient;
+let mediatorServices: MediatorServices;
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
     client = startLanguageClient(context);
+    mediatorServices = createMediatorServices({ ...NodeFileSystem }).Mediator;
+    context.subscriptions.push(commands.registerCommand('mediator.generate', async () => {
+        await vscode.window.showInformationMessage('Hello World!').then(undefined, console.error);
+        await generateNuXmvModel(context);
+    }))
 }
 
 // This function is called when the extension is deactivated.
@@ -56,4 +65,14 @@ function startLanguageClient(context: vscode.ExtensionContext): LanguageClient {
     // Start the client. This will also launch the server
     client.start();
     return client;
+}
+
+async function generateNuXmvModel(context: vscode.ExtensionContext) {
+    const generator = mediatorServices.generation.MediatorGenerator;
+    const text = vscode.window.activeTextEditor?.document.getText();
+
+    if (text) {
+        const returner = generator.generate(text);
+        console.log(returner);
+    }
 }

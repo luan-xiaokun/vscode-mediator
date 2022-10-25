@@ -1,36 +1,43 @@
 import {
     createDefaultModule, createDefaultSharedModule, DefaultSharedModuleContext, inject,
-    LangiumServices, LangiumSharedServices
+    LangiumServices, LangiumSharedServices, Module, PartialLangiumServices
 } from 'langium';
 import { MediatorGeneratedModule, MediatorGeneratedSharedModule } from './generated/module';
+import { MediatorGenerator, Generator } from './mediator-generate';
 
 /**
  * Declaration of custom services - add your own service classes here.
  */
-// export type MediatorAddedServices = {
-//     validation: {
-//         MediatorValidator: MediatorValidator
-//     }
-// }
+export type MediatorAddedServices = {
+    // validation: {
+    //     MediatorValidator: MediatorValidator
+    // }
+    generation: {
+        MediatorGenerator: Generator
+    }
+}
 
 /**
  * Union of Langium default services and your custom services - use this as constructor parameter
  * of custom service classes.
  */
-export type MediatorServices = LangiumServices
-// export type MediatorServices = LangiumServices & MediatorAddedServices
+// export type MediatorServices = LangiumServices;
+export type MediatorServices = LangiumServices & MediatorAddedServices
 
 /**
  * Dependency injection module that overrides Langium default services and contributes the
  * declared custom services. The Langium defaults can be partially specified to override only
  * selected services, while the custom services must be fully specified.
  */
-// export const MediatorModule: Module<MediatorServices, PartialLangiumServices & MediatorAddedServices> = {
-//     validation: {
-//         // ValidationRegistry: (services) => new MediatorValidationRegistry(services),
-//         MediatorValidator: () => new MediatorValidator()
-//     }
-// };
+export const MediatorModule: Module<MediatorServices, PartialLangiumServices & MediatorAddedServices> = {
+    // validation: {
+    // ValidationRegistry: (services) => new MediatorValidationRegistry(services),
+    // MediatorValidator: () => new MediatorValidator()
+    // }
+    generation: {
+        MediatorGenerator: (services) => new MediatorGenerator(services)
+    }
+};
 
 /**
  * Create the full set of services required by Langium.
@@ -58,7 +65,7 @@ export function createMediatorServices(context: DefaultSharedModuleContext): {
     const Mediator = inject(
         createDefaultModule({ shared }),
         MediatorGeneratedModule,
-        // MediatorModule
+        MediatorModule
     );
     shared.ServiceRegistry.register(Mediator);
     return { shared, Mediator };
