@@ -2,7 +2,7 @@
     "projectName": "Mediator",
     "languages": [{
         "id": "mediator",
-        "grammar": "src/language-server/mediator.langium",
+        "grammar": "src/language-server/langium/mediator.langium",
         "fileExtensions": [".med"],
         "textMate": {
             "out": "syntaxes/mediator.tmLanguage.json"

@@ -7,12 +7,32 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { AstNode, AstReflection, Reference, ReferenceInfo, isAstNode, TypeMetaData } from 'langium';
 
+export type AbstractType = string;
+
+export type Connection = InstantiationConnection | PortConnection;
+
+export const Connection = 'Connection';
+
+export function isConnection(item: unknown): item is Connection {
+    return reflection.isInstance(item, Connection);
+}
+
 export type Expression = FunctionCallExpression | ListExpression | Literal | StructExpression;
 
 export const Expression = 'Expression';
 
 export function isExpression(item: unknown): item is Expression {
     return reflection.isInstance(item, Expression);
+}
+
+export type FeatureID = string;
+
+export type FunctionStatement = AssignmentStatement | FunctionConditionalStatement | FunctionLoopStatement | ReturnStatement;
+
+export const FunctionStatement = 'FunctionStatement';
+
+export function isFunctionStatement(item: unknown): item is FunctionStatement {
+    return reflection.isInstance(item, FunctionStatement);
 }
 
 export type Literal = BoolLiteral | CharLiteral | IntLiteral | NullLiteral | RealLiteral;
@@ -23,7 +43,15 @@ export function isLiteral(item: unknown): item is Literal {
     return reflection.isInstance(item, Literal);
 }
 
-export type NamedElement = ConstDef | EnumMember | StructType | VariableTyping;
+export type NamedAutomaton = Automaton | ComponentName;
+
+export const NamedAutomaton = 'NamedAutomaton';
+
+export function isNamedAutomaton(item: unknown): item is NamedAutomaton {
+    return reflection.isInstance(item, NamedAutomaton);
+}
+
+export type NamedElement = ConstDef | EnumMember | Function | LoopVariableDeclaration | PortTyping | StructField | TemplateTyping | VariableName;
 
 export const NamedElement = 'NamedElement';
 
@@ -31,12 +59,84 @@ export function isNamedElement(item: unknown): item is NamedElement {
     return reflection.isInstance(item, NamedElement);
 }
 
-export type Type = EnumType | NamedType | PrimitiveType | StructType;
+export type NamedType = TemplateTyping | TypeDef;
+
+export const NamedType = 'NamedType';
+
+export function isNamedType(item: unknown): item is NamedType {
+    return reflection.isInstance(item, NamedType);
+}
+
+export type NonInterfaceParameterType = AbstractType | FunctionType;
+
+export const NonInterfaceParameterType = 'NonInterfaceParameterType';
+
+export function isNonInterfaceParameterType(item: unknown): item is NonInterfaceParameterType {
+    return reflection.isInstance(item, NonInterfaceParameterType);
+}
+
+export type ParameterType = AbstractType | FunctionType | InterfaceType;
+
+export const ParameterType = 'ParameterType';
+
+export function isParameterType(item: unknown): item is ParameterType {
+    return reflection.isInstance(item, ParameterType);
+}
+
+export type Statement = AssignmentStatement | ConditionalStatement | LoopStatement;
+
+export const Statement = 'Statement';
+
+export function isStatement(item: unknown): item is Statement {
+    return reflection.isInstance(item, Statement);
+}
+
+export type StatementOrSynchronization = Statement | Synchronization;
+
+export const StatementOrSynchronization = 'StatementOrSynchronization';
+
+export function isStatementOrSynchronization(item: unknown): item is StatementOrSynchronization {
+    return reflection.isInstance(item, StatementOrSynchronization);
+}
+
+export type Transition = GroupTransition | SingleTransition;
+
+export const Transition = 'Transition';
+
+export function isTransition(item: unknown): item is Transition {
+    return reflection.isInstance(item, Transition);
+}
+
+export type Type = AliasType | EnumType | PrimitiveType | StructType;
 
 export const Type = 'Type';
 
 export function isType(item: unknown): item is Type {
     return reflection.isInstance(item, Type);
+}
+
+export interface AliasType extends AstNode {
+    readonly $container: Function | FunctionType | LoopVariableDeclaration | MultipleVariableTyping | PortType | StructType | TemplateTyping | TypeDef | VariableTyping;
+    alias: Reference<NamedType>
+}
+
+export const AliasType = 'AliasType';
+
+export function isAliasType(item: unknown): item is AliasType {
+    return reflection.isInstance(item, AliasType);
+}
+
+export interface AssignmentStatement extends AstNode {
+    readonly $container: Automaton | ConditionalStatement | Function | FunctionConditionalStatement | FunctionLoopStatement | LoopStatement | SingleTransition;
+    assign: '%=' | '*=' | '+=' | '-=' | '/=' | '='
+    left: Expression
+    right: Expression
+}
+
+export const AssignmentStatement = 'AssignmentStatement';
+
+export function isAssignmentStatement(item: unknown): item is AssignmentStatement {
+    return reflection.isInstance(item, AssignmentStatement);
 }
 
 export interface AttributeExpression extends AstNode {
@@ -48,6 +148,35 @@ export const AttributeExpression = 'AttributeExpression';
 
 export function isAttributeExpression(item: unknown): item is AttributeExpression {
     return reflection.isInstance(item, AttributeExpression);
+}
+
+export interface Automaton extends AstNode {
+    readonly $container: Program;
+    initial: Array<Statement>
+    invariants: Array<Expression>
+    localvars: Array<MultipleVariableTyping>
+    name: FeatureID
+    ports: Array<PortTyping>
+    templates: Array<TemplateTyping>
+    transitions: Array<Transition>
+}
+
+export const Automaton = 'Automaton';
+
+export function isAutomaton(item: unknown): item is Automaton {
+    return reflection.isInstance(item, Automaton);
+}
+
+export interface AutomatonPort extends AstNode {
+    readonly $container: InstantiationConnection | PortConnection;
+    automaton: Reference<NamedAutomaton>
+    port: Reference<PortTyping>
+}
+
+export const AutomatonPort = 'AutomatonPort';
+
+export function isAutomatonPort(item: unknown): item is AutomatonPort {
+    return reflection.isInstance(item, AutomatonPort);
 }
 
 export interface BinaryExpression extends AstNode {
@@ -82,6 +211,41 @@ export function isCharLiteral(item: unknown): item is CharLiteral {
     return reflection.isInstance(item, CharLiteral);
 }
 
+export interface ComponentInstantiation extends AstNode {
+    readonly $container: InstantiationConnection;
+    component: Reference<NamedAutomaton>
+    templates: Array<Expression>
+}
+
+export const ComponentInstantiation = 'ComponentInstantiation';
+
+export function isComponentInstantiation(item: unknown): item is ComponentInstantiation {
+    return reflection.isInstance(item, ComponentInstantiation);
+}
+
+export interface ComponentName extends AstNode {
+    readonly $container: ComponentTyping;
+    name: FeatureID
+}
+
+export const ComponentName = 'ComponentName';
+
+export function isComponentName(item: unknown): item is ComponentName {
+    return reflection.isInstance(item, ComponentName);
+}
+
+export interface ComponentTyping extends AstNode {
+    readonly $container: System;
+    components: Array<ComponentName>
+    names: Array<ComponentName>
+}
+
+export const ComponentTyping = 'ComponentTyping';
+
+export function isComponentTyping(item: unknown): item is ComponentTyping {
+    return reflection.isInstance(item, ComponentTyping);
+}
+
 export interface ConditionalExpression extends AstNode {
     condition: Expression
     else: Expression
@@ -94,10 +258,23 @@ export function isConditionalExpression(item: unknown): item is ConditionalExpre
     return reflection.isInstance(item, ConditionalExpression);
 }
 
+export interface ConditionalStatement extends AstNode {
+    readonly $container: Automaton | ConditionalStatement | Function | FunctionConditionalStatement | FunctionLoopStatement | LoopStatement | SingleTransition;
+    condition: Expression
+    else: Array<Statement>
+    then: Array<Statement>
+}
+
+export const ConditionalStatement = 'ConditionalStatement';
+
+export function isConditionalStatement(item: unknown): item is ConditionalStatement {
+    return reflection.isInstance(item, ConditionalStatement);
+}
+
 export interface ConstDef extends AstNode {
     readonly $container: Program;
     expr: Expression
-    name: string
+    name: FeatureID
 }
 
 export const ConstDef = 'ConstDef';
@@ -108,7 +285,7 @@ export function isConstDef(item: unknown): item is ConstDef {
 
 export interface EnumMember extends AstNode {
     readonly $container: EnumType;
-    name: string
+    name: FeatureID
 }
 
 export const EnumMember = 'EnumMember';
@@ -118,7 +295,7 @@ export function isEnumMember(item: unknown): item is EnumMember {
 }
 
 export interface EnumType extends AstNode {
-    readonly $container: StructType | TypeDef | VariableTyping;
+    readonly $container: Function | FunctionType | LoopVariableDeclaration | MultipleVariableTyping | PortType | StructType | TemplateTyping | TypeDef | VariableTyping;
     members: Array<EnumMember>
 }
 
@@ -128,15 +305,20 @@ export function isEnumType(item: unknown): item is EnumType {
     return reflection.isInstance(item, EnumType);
 }
 
-export interface Field extends AstNode {
-    readonly $container: StructType;
-    name: string
+export interface Function extends AstNode {
+    readonly $container: Program;
+    arguments: Array<VariableTyping>
+    localvars: Array<MultipleVariableTyping>
+    name: FeatureID
+    returntype: Type
+    statements: Array<FunctionStatement>
+    templates: Array<TemplateTyping>
 }
 
-export const Field = 'Field';
+export const Function = 'Function';
 
-export function isField(item: unknown): item is Field {
-    return reflection.isInstance(item, Field);
+export function isFunction(item: unknown): item is Function {
+    return reflection.isInstance(item, Function);
 }
 
 export interface FunctionCallExpression extends AstNode {
@@ -152,6 +334,56 @@ export function isFunctionCallExpression(item: unknown): item is FunctionCallExp
     return reflection.isInstance(item, FunctionCallExpression);
 }
 
+export interface FunctionConditionalStatement extends AstNode {
+    readonly $container: Automaton | ConditionalStatement | Function | FunctionConditionalStatement | FunctionLoopStatement | LoopStatement | SingleTransition;
+    condition: Expression
+    else: Array<FunctionStatement>
+    then: Array<FunctionStatement>
+}
+
+export const FunctionConditionalStatement = 'FunctionConditionalStatement';
+
+export function isFunctionConditionalStatement(item: unknown): item is FunctionConditionalStatement {
+    return reflection.isInstance(item, FunctionConditionalStatement);
+}
+
+export interface FunctionLoopStatement extends AstNode {
+    readonly $container: Automaton | ConditionalStatement | Function | FunctionConditionalStatement | FunctionLoopStatement | LoopStatement | SingleTransition;
+    body: Array<FunctionStatement>
+    condition: Expression
+    declaration: LoopVariableDeclaration
+    update: LoopVariableUpdate
+}
+
+export const FunctionLoopStatement = 'FunctionLoopStatement';
+
+export function isFunctionLoopStatement(item: unknown): item is FunctionLoopStatement {
+    return reflection.isInstance(item, FunctionLoopStatement);
+}
+
+export interface FunctionType extends AstNode {
+    readonly $container: TemplateTyping;
+    argtypes: Array<Type>
+    returntype: Type
+}
+
+export const FunctionType = 'FunctionType';
+
+export function isFunctionType(item: unknown): item is FunctionType {
+    return reflection.isInstance(item, FunctionType);
+}
+
+export interface GroupTransition extends AstNode {
+    readonly $container: Automaton | GroupTransition;
+    transitions: Array<SingleTransition>
+}
+
+export const GroupTransition = 'GroupTransition';
+
+export function isGroupTransition(item: unknown): item is GroupTransition {
+    return reflection.isInstance(item, GroupTransition);
+}
+
 export interface IndexingExpression extends AstNode {
     base: Expression
     index: Expression
@@ -161,6 +393,40 @@ export const IndexingExpression = 'IndexingExpression';
 
 export function isIndexingExpression(item: unknown): item is IndexingExpression {
     return reflection.isInstance(item, IndexingExpression);
+}
+
+export interface InstantiationConnection extends AstNode {
+    readonly $container: System;
+    entity: ComponentInstantiation
+    ports: Array<AutomatonPort>
+}
+
+export const InstantiationConnection = 'InstantiationConnection';
+
+export function isInstantiationConnection(item: unknown): item is InstantiationConnection {
+    return reflection.isInstance(item, InstantiationConnection);
+}
+
+export interface InterfaceType extends AstNode {
+    readonly $container: TemplateTyping;
+    porttypes: Array<PortType>
+}
+
+export const InterfaceType = 'InterfaceType';
+
+export function isInterfaceType(item: unknown): item is InterfaceType {
+    return reflection.isInstance(item, InterfaceType);
+}
+
+export interface InternalPort extends AstNode {
+    readonly $container: System;
+    name: FeatureID
+}
+
+export const InternalPort = 'InternalPort';
+
+export function isInternalPort(item: unknown): item is InternalPort {
+    return reflection.isInstance(item, InternalPort);
 }
 
 export interface IntLiteral extends AstNode {
@@ -183,8 +449,18 @@ export function isIterableExpression(item: unknown): item is IterableExpression 
     return reflection.isInstance(item, IterableExpression);
 }
 
+export interface IterableType extends AstNode {
+    types: Array<Type>
+}
+
+export const IterableType = 'IterableType';
+
+export function isIterableType(item: unknown): item is IterableType {
+    return reflection.isInstance(item, IterableType);
+}
+
 export interface ListExpression extends AstNode {
-    readonly $container: ConstDef | ListExpression | StructExpression;
+    readonly $container: AssignmentStatement | Automaton | ComponentInstantiation | ConditionalStatement | ConstDef | FunctionConditionalStatement | FunctionLoopStatement | ListExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | PortConnectionOption | ReturnStatement | SingleTransition | StructExpression;
     values: Array<Expression>
 }
 
@@ -205,6 +481,58 @@ export function isListType(item: unknown): item is ListType {
     return reflection.isInstance(item, ListType);
 }
 
+export interface LoopStatement extends AstNode {
+    readonly $container: Automaton | ConditionalStatement | Function | FunctionConditionalStatement | FunctionLoopStatement | LoopStatement | SingleTransition;
+    body: Array<Statement>
+    condition: Expression
+    declaration: LoopVariableDeclaration
+    update: LoopVariableUpdate
+}
+
+export const LoopStatement = 'LoopStatement';
+
+export function isLoopStatement(item: unknown): item is LoopStatement {
+    return reflection.isInstance(item, LoopStatement);
+}
+
+export interface LoopVariableDeclaration extends AstNode {
+    readonly $container: FunctionLoopStatement | LoopStatement;
+    name: FeatureID
+    type: Type
+    value: Expression
+}
+
+export const LoopVariableDeclaration = 'LoopVariableDeclaration';
+
+export function isLoopVariableDeclaration(item: unknown): item is LoopVariableDeclaration {
+    return reflection.isInstance(item, LoopVariableDeclaration);
+}
+
+export interface LoopVariableUpdate extends AstNode {
+    readonly $container: FunctionLoopStatement | LoopStatement;
+    assign: '%=' | '*=' | '+=' | '-=' | '/=' | '='
+    expr: Expression
+    var: Reference<LoopVariableDeclaration>
+}
+
+export const LoopVariableUpdate = 'LoopVariableUpdate';
+
+export function isLoopVariableUpdate(item: unknown): item is LoopVariableUpdate {
+    return reflection.isInstance(item, LoopVariableUpdate);
+}
+
+export interface MultipleVariableTyping extends AstNode {
+    readonly $container: Automaton | Function;
+    type: Type
+    vars: Array<VariableName>
+}
+
+export const MultipleVariableTyping = 'MultipleVariableTyping';
+
+export function isMultipleVariableTyping(item: unknown): item is MultipleVariableTyping {
+    return reflection.isInstance(item, MultipleVariableTyping);
+}
+
 export interface NamedExpression extends AstNode {
     element: Reference<NamedElement>
 }
@@ -215,17 +543,6 @@ export function isNamedExpression(item: unknown): item is NamedExpression {
     return reflection.isInstance(item, NamedExpression);
 }
 
-export interface NamedType extends AstNode {
-    readonly $container: StructType | TypeDef | VariableTyping;
-    alias: Reference<TypeDef>
-}
-
-export const NamedType = 'NamedType';
-
-export function isNamedType(item: unknown): item is NamedType {
-    return reflection.isInstance(item, NamedType);
-}
-
 export interface NullLiteral extends AstNode {
     value: string
 }
@@ -234,6 +551,56 @@ export const NullLiteral = 'NullLiteral';
 
 export function isNullLiteral(item: unknown): item is NullLiteral {
     return reflection.isInstance(item, NullLiteral);
+}
+
+export interface PortConnection extends AstNode {
+    readonly $container: System;
+    from: Array<AutomatonPort>
+    options?: PortConnectionOption
+    to: Array<AutomatonPort>
+}
+
+export const PortConnection = 'PortConnection';
+
+export function isPortConnection(item: unknown): item is PortConnection {
+    return reflection.isInstance(item, PortConnection);
+}
+
+export interface PortConnectionOption extends AstNode {
+    readonly $container: PortConnection;
+    capacity?: Expression
+    cast: 'broadcast' | 'unicast'
+    sync: 'async' | 'sync'
+}
+
+export const PortConnectionOption = 'PortConnectionOption';
+
+export function isPortConnectionOption(item: unknown): item is PortConnectionOption {
+    return reflection.isInstance(item, PortConnectionOption);
+}
+
+export interface PortType extends AstNode {
+    readonly $container: InterfaceType | PortTyping;
+    direction: 'in' | 'out'
+    type: Type
+}
+
+export const PortType = 'PortType';
+
+export function isPortType(item: unknown): item is PortType {
+    return reflection.isInstance(item, PortType);
+}
+
+export interface PortTyping extends AstNode {
+    readonly $container: Automaton | System;
+    name: FeatureID
+    type: PortType
+}
+
+export const PortTyping = 'PortTyping';
+
+export function isPortTyping(item: unknown): item is PortTyping {
+    return reflection.isInstance(item, PortTyping);
 }
 
 export interface PrefixExpression extends AstNode {
@@ -248,7 +615,7 @@ export function isPrefixExpression(item: unknown): item is PrefixExpression {
 }
 
 export interface PrimitiveType extends AstNode {
-    readonly $container: StructType | TypeDef | VariableTyping;
+    readonly $container: Function | FunctionType | LoopVariableDeclaration | MultipleVariableTyping | PortType | StructType | TemplateTyping | TypeDef | VariableTyping;
     name: 'bool' | 'char' | 'int' | 'null' | 'real'
 }
 
@@ -259,9 +626,11 @@ export function isPrimitiveType(item: unknown): item is PrimitiveType {
 }
 
 export interface Program extends AstNode {
+    automatons: Array<Automaton>
     constdefs: Array<ConstDef>
+    functions: Array<Function>
+    systems: Array<System>
     typedefs: Array<TypeDef>
-    vars: Array<VariableTyping>
 }
 
 export const Program = 'Program';
@@ -280,9 +649,43 @@ export function isRealLiteral(item: unknown): item is RealLiteral {
     return reflection.isInstance(item, RealLiteral);
 }
 
+export interface ReturnStatement extends AstNode {
+    readonly $container: Automaton | ConditionalStatement | Function | FunctionConditionalStatement | FunctionLoopStatement | LoopStatement | SingleTransition;
+    value: Expression
+}
+
+export const ReturnStatement = 'ReturnStatement';
+
+export function isReturnStatement(item: unknown): item is ReturnStatement {
+    return reflection.isInstance(item, ReturnStatement);
+}
+
+export interface ScopedAutomaton extends AstNode {
+    automaton: Reference<NamedAutomaton>
+    previous?: Reference<NamedAutomaton>
+}
+
+export const ScopedAutomaton = 'ScopedAutomaton';
+
+export function isScopedAutomaton(item: unknown): item is ScopedAutomaton {
+    return reflection.isInstance(item, ScopedAutomaton);
+}
+
+export interface SingleTransition extends AstNode {
+    readonly $container: Automaton | GroupTransition;
+    guard: Expression
+    statements: Array<StatementOrSynchronization>
+}
+
+export const SingleTransition = 'SingleTransition';
+
+export function isSingleTransition(item: unknown): item is SingleTransition {
+    return reflection.isInstance(item, SingleTransition);
+}
+
 export interface StructExpression extends AstNode {
-    readonly $container: ConstDef | ListExpression | StructExpression;
-    fields: Array<string>
+    readonly $container: AssignmentStatement | Automaton | ComponentInstantiation | ConditionalStatement | ConstDef | FunctionConditionalStatement | FunctionLoopStatement | ListExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | PortConnectionOption | ReturnStatement | SingleTransition | StructExpression;
+    fields: Array<FeatureID>
     values: Array<Expression>
 }
 
@@ -292,9 +695,20 @@ export function isStructExpression(item: unknown): item is StructExpression {
     return reflection.isInstance(item, StructExpression);
 }
 
+export interface StructField extends AstNode {
+    readonly $container: StructType;
+    name: FeatureID
+}
+
+export const StructField = 'StructField';
+
+export function isStructField(item: unknown): item is StructField {
+    return reflection.isInstance(item, StructField);
+}
+
 export interface StructType extends AstNode {
-    readonly $container: StructType | TypeDef | VariableTyping;
-    fields: Array<Field>
+    readonly $container: Function | FunctionType | LoopVariableDeclaration | MultipleVariableTyping | PortType | StructType | TemplateTyping | TypeDef | VariableTyping;
+    fields: Array<StructField>
     types: Array<Type>
 }
 
@@ -302,6 +716,45 @@ export const StructType = 'StructType';
 
 export function isStructType(item: unknown): item is StructType {
     return reflection.isInstance(item, StructType);
+}
+
+export interface Synchronization extends AstNode {
+    readonly $container: Automaton | ConditionalStatement | Function | FunctionConditionalStatement | FunctionLoopStatement | LoopStatement | SingleTransition;
+    ports: Array<Reference<PortTyping>>
+}
+
+export const Synchronization = 'Synchronization';
+
+export function isSynchronization(item: unknown): item is Synchronization {
+    return reflection.isInstance(item, Synchronization);
+}
+
+export interface System extends AstNode {
+    readonly $container: Program;
+    components: Array<ComponentTyping>
+    connections: Array<Connection>
+    internals: Array<InternalPort>
+    name: FeatureID
+    ports: Array<PortTyping>
+    templates: Array<TemplateTyping>
+}
+
+export const System = 'System';
+
+export function isSystem(item: unknown): item is System {
+    return reflection.isInstance(item, System);
+}
+
+export interface TemplateTyping extends AstNode {
+    readonly $container: Automaton | Function | System;
+    name: FeatureID
+    type: NonInterfaceParameterType | ParameterType | Type
+}
+
+export const TemplateTyping = 'TemplateTyping';
+
+export function isTemplateTyping(item: unknown): item is TemplateTyping {
+    return reflection.isInstance(item, TemplateTyping);
 }
 
 export interface TupleExpression extends IterableExpression {
@@ -313,8 +766,7 @@ export function isTupleExpression(item: unknown): item is TupleExpression {
     return reflection.isInstance(item, TupleExpression);
 }
 
-export interface TupleType extends AstNode {
-    types: Array<Type>
+export interface TupleType extends IterableType {
 }
 
 export const TupleType = 'TupleType';
@@ -325,7 +777,7 @@ export function isTupleType(item: unknown): item is TupleType {
 
 export interface TypeDef extends AstNode {
     readonly $container: Program;
-    name: string
+    name: FeatureID
     type: Type
 }
 
@@ -335,8 +787,7 @@ export function isTypeDef(item: unknown): item is TypeDef {
     return reflection.isInstance(item, TypeDef);
 }
 
-export interface UnionType extends AstNode {
-    types: Array<Type>
+export interface UnionType extends IterableType {
 }
 
 export const UnionType = 'UnionType';
@@ -345,10 +796,21 @@ export function isUnionType(item: unknown): item is UnionType {
     return reflection.isInstance(item, UnionType);
 }
 
+export interface VariableName extends AstNode {
+    readonly $container: MultipleVariableTyping | VariableTyping;
+    name: FeatureID
+}
+
+export const VariableName = 'VariableName';
+
+export function isVariableName(item: unknown): item is VariableName {
+    return reflection.isInstance(item, VariableName);
+}
+
 export interface VariableTyping extends AstNode {
-    readonly $container: Program;
-    name: string
-    typing: Type
+    readonly $container: Function;
+    type: Type
+    var: VariableName
 }
 
 export const VariableTyping = 'VariableTyping';
@@ -357,12 +819,12 @@ export function isVariableTyping(item: unknown): item is VariableTyping {
     return reflection.isInstance(item, VariableTyping);
 }
 
-export type MediatorAstType = 'AttributeExpression' | 'BinaryExpression' | 'BoolLiteral' | 'CharLiteral' | 'ConditionalExpression' | 'ConstDef' | 'EnumMember' | 'EnumType' | 'Expression' | 'Field' | 'FunctionCallExpression' | 'IndexingExpression' | 'IntLiteral' | 'IterableExpression' | 'ListExpression' | 'ListType' | 'Literal' | 'NamedElement' | 'NamedExpression' | 'NamedType' | 'NullLiteral' | 'PrefixExpression' | 'PrimitiveType' | 'Program' | 'RealLiteral' | 'StructExpression' | 'StructType' | 'TupleExpression' | 'TupleType' | 'Type' | 'TypeDef' | 'UnionType' | 'VariableTyping';
+export type MediatorAstType = 'AliasType' | 'AssignmentStatement' | 'AttributeExpression' | 'Automaton' | 'AutomatonPort' | 'BinaryExpression' | 'BoolLiteral' | 'CharLiteral' | 'ComponentInstantiation' | 'ComponentName' | 'ComponentTyping' | 'ConditionalExpression' | 'ConditionalStatement' | 'Connection' | 'ConstDef' | 'EnumMember' | 'EnumType' | 'Expression' | 'Function' | 'FunctionCallExpression' | 'FunctionConditionalStatement' | 'FunctionLoopStatement' | 'FunctionStatement' | 'FunctionType' | 'GroupTransition' | 'IndexingExpression' | 'InstantiationConnection' | 'IntLiteral' | 'InterfaceType' | 'InternalPort' | 'IterableExpression' | 'IterableType' | 'ListExpression' | 'ListType' | 'Literal' | 'LoopStatement' | 'LoopVariableDeclaration' | 'LoopVariableUpdate' | 'MultipleVariableTyping' | 'NamedAutomaton' | 'NamedElement' | 'NamedExpression' | 'NamedType' | 'NonInterfaceParameterType' | 'NullLiteral' | 'ParameterType' | 'PortConnection' | 'PortConnectionOption' | 'PortType' | 'PortTyping' | 'PrefixExpression' | 'PrimitiveType' | 'Program' | 'RealLiteral' | 'ReturnStatement' | 'ScopedAutomaton' | 'SingleTransition' | 'Statement' | 'StatementOrSynchronization' | 'StructExpression' | 'StructField' | 'StructType' | 'Synchronization' | 'System' | 'TemplateTyping' | 'Transition' | 'TupleExpression' | 'TupleType' | 'Type' | 'TypeDef' | 'UnionType' | 'VariableName' | 'VariableTyping';
 
 export class MediatorAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['AttributeExpression', 'BinaryExpression', 'BoolLiteral', 'CharLiteral', 'ConditionalExpression', 'ConstDef', 'EnumMember', 'EnumType', 'Expression', 'Field', 'FunctionCallExpression', 'IndexingExpression', 'IntLiteral', 'IterableExpression', 'ListExpression', 'ListType', 'Literal', 'NamedElement', 'NamedExpression', 'NamedType', 'NullLiteral', 'PrefixExpression', 'PrimitiveType', 'Program', 'RealLiteral', 'StructExpression', 'StructType', 'TupleExpression', 'TupleType', 'Type', 'TypeDef', 'UnionType', 'VariableTyping'];
+        return ['AliasType', 'AssignmentStatement', 'AttributeExpression', 'Automaton', 'AutomatonPort', 'BinaryExpression', 'BoolLiteral', 'CharLiteral', 'ComponentInstantiation', 'ComponentName', 'ComponentTyping', 'ConditionalExpression', 'ConditionalStatement', 'Connection', 'ConstDef', 'EnumMember', 'EnumType', 'Expression', 'Function', 'FunctionCallExpression', 'FunctionConditionalStatement', 'FunctionLoopStatement', 'FunctionStatement', 'FunctionType', 'GroupTransition', 'IndexingExpression', 'InstantiationConnection', 'IntLiteral', 'InterfaceType', 'InternalPort', 'IterableExpression', 'IterableType', 'ListExpression', 'ListType', 'Literal', 'LoopStatement', 'LoopVariableDeclaration', 'LoopVariableUpdate', 'MultipleVariableTyping', 'NamedAutomaton', 'NamedElement', 'NamedExpression', 'NamedType', 'NonInterfaceParameterType', 'NullLiteral', 'ParameterType', 'PortConnection', 'PortConnectionOption', 'PortType', 'PortTyping', 'PrefixExpression', 'PrimitiveType', 'Program', 'RealLiteral', 'ReturnStatement', 'ScopedAutomaton', 'SingleTransition', 'Statement', 'StatementOrSynchronization', 'StructExpression', 'StructField', 'StructType', 'Synchronization', 'System', 'TemplateTyping', 'Transition', 'TupleExpression', 'TupleType', 'Type', 'TypeDef', 'UnionType', 'VariableName', 'VariableTyping'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -374,16 +836,31 @@ export class MediatorAstReflection implements AstReflection {
             return true;
         }
         switch (subtype) {
+            case AliasType:
+            case EnumType:
+            case ListType:
+            case PrimitiveType:
+            case StructType: {
+                return this.isSubtype(Type, supertype);
+            }
+            case AssignmentStatement: {
+                return this.isSubtype(Statement, supertype) || this.isSubtype(FunctionStatement, supertype);
+            }
+            case AttributeExpression:
             case BinaryExpression:
             case ConditionalExpression:
             case FunctionCallExpression:
             case IndexingExpression:
             case ListExpression:
+            case NamedExpression:
             case PrefixExpression:
             case StructExpression:
-            case Literal:
-            case NamedElement: {
+            case Literal: {
                 return this.isSubtype(Expression, supertype);
+            }
+            case Automaton:
+            case ComponentName: {
+                return this.isSubtype(NamedAutomaton, supertype);
             }
             case BoolLiteral:
             case CharLiteral:
@@ -392,24 +869,54 @@ export class MediatorAstReflection implements AstReflection {
             case RealLiteral: {
                 return this.isSubtype(Literal, supertype);
             }
+            case ConditionalStatement:
+            case LoopStatement: {
+                return this.isSubtype(Statement, supertype);
+            }
             case ConstDef:
             case EnumMember:
-            case VariableTyping: {
+            case Function:
+            case LoopVariableDeclaration:
+            case PortTyping:
+            case StructField:
+            case VariableName: {
                 return this.isSubtype(NamedElement, supertype);
             }
-            case EnumType:
-            case ListType:
-            case NamedType:
-            case PrimitiveType:
-            case TupleType:
-            case UnionType: {
-                return this.isSubtype(Type, supertype);
+            case FunctionConditionalStatement:
+            case FunctionLoopStatement:
+            case ReturnStatement: {
+                return this.isSubtype(FunctionStatement, supertype);
             }
-            case StructType: {
-                return this.isSubtype(Type, supertype) || this.isSubtype(NamedElement, supertype);
+            case FunctionType: {
+                return this.isSubtype(ParameterType, supertype) || this.isSubtype(NonInterfaceParameterType, supertype);
+            }
+            case GroupTransition:
+            case SingleTransition: {
+                return this.isSubtype(Transition, supertype);
+            }
+            case InstantiationConnection:
+            case PortConnection: {
+                return this.isSubtype(Connection, supertype);
+            }
+            case InterfaceType: {
+                return this.isSubtype(ParameterType, supertype);
+            }
+            case Synchronization:
+            case Statement: {
+                return this.isSubtype(StatementOrSynchronization, supertype);
+            }
+            case TemplateTyping: {
+                return this.isSubtype(NamedElement, supertype) || this.isSubtype(NamedType, supertype);
             }
             case TupleExpression: {
                 return this.isSubtype(IterableExpression, supertype) || this.isSubtype(Expression, supertype);
+            }
+            case TupleType:
+            case UnionType: {
+                return this.isSubtype(IterableType, supertype) || this.isSubtype(Type, supertype);
+            }
+            case TypeDef: {
+                return this.isSubtype(NamedType, supertype);
             }
             default: {
                 return false;
@@ -420,17 +927,38 @@ export class MediatorAstReflection implements AstReflection {
     getReferenceType(refInfo: ReferenceInfo): string {
         const referenceId = `${refInfo.container.$type}:${refInfo.property}`;
         switch (referenceId) {
+            case 'AliasType:alias': {
+                return NamedType;
+            }
             case 'AttributeExpression:field': {
                 return NamedElement;
+            }
+            case 'AutomatonPort:automaton': {
+                return NamedAutomaton;
+            }
+            case 'AutomatonPort:port': {
+                return PortTyping;
+            }
+            case 'ComponentInstantiation:component': {
+                return NamedAutomaton;
             }
             case 'FunctionCallExpression:name': {
                 return NamedElement;
             }
+            case 'LoopVariableUpdate:var': {
+                return LoopVariableDeclaration;
+            }
             case 'NamedExpression:element': {
                 return NamedElement;
             }
-            case 'NamedType:alias': {
-                return TypeDef;
+            case 'ScopedAutomaton:automaton': {
+                return NamedAutomaton;
+            }
+            case 'ScopedAutomaton:previous': {
+                return NamedAutomaton;
+            }
+            case 'Synchronization:ports': {
+                return PortTyping;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
@@ -440,6 +968,19 @@ export class MediatorAstReflection implements AstReflection {
 
     getTypeMetaData(type: string): TypeMetaData {
         switch (type) {
+            case 'Automaton': {
+                return {
+                    name: 'Automaton',
+                    mandatory: [
+                        { name: 'initial', type: 'array' },
+                        { name: 'invariants', type: 'array' },
+                        { name: 'localvars', type: 'array' },
+                        { name: 'ports', type: 'array' },
+                        { name: 'templates', type: 'array' },
+                        { name: 'transitions', type: 'array' }
+                    ]
+                };
+            }
             case 'BoolLiteral': {
                 return {
                     name: 'BoolLiteral',
@@ -448,11 +989,48 @@ export class MediatorAstReflection implements AstReflection {
                     ]
                 };
             }
+            case 'ComponentInstantiation': {
+                return {
+                    name: 'ComponentInstantiation',
+                    mandatory: [
+                        { name: 'templates', type: 'array' }
+                    ]
+                };
+            }
+            case 'ComponentTyping': {
+                return {
+                    name: 'ComponentTyping',
+                    mandatory: [
+                        { name: 'components', type: 'array' },
+                        { name: 'names', type: 'array' }
+                    ]
+                };
+            }
+            case 'ConditionalStatement': {
+                return {
+                    name: 'ConditionalStatement',
+                    mandatory: [
+                        { name: 'else', type: 'array' },
+                        { name: 'then', type: 'array' }
+                    ]
+                };
+            }
             case 'EnumType': {
                 return {
                     name: 'EnumType',
                     mandatory: [
                         { name: 'members', type: 'array' }
+                    ]
+                };
+            }
+            case 'Function': {
+                return {
+                    name: 'Function',
+                    mandatory: [
+                        { name: 'arguments', type: 'array' },
+                        { name: 'localvars', type: 'array' },
+                        { name: 'statements', type: 'array' },
+                        { name: 'templates', type: 'array' }
                     ]
                 };
             }
@@ -466,11 +1044,68 @@ export class MediatorAstReflection implements AstReflection {
                     ]
                 };
             }
+            case 'FunctionConditionalStatement': {
+                return {
+                    name: 'FunctionConditionalStatement',
+                    mandatory: [
+                        { name: 'else', type: 'array' },
+                        { name: 'then', type: 'array' }
+                    ]
+                };
+            }
+            case 'FunctionLoopStatement': {
+                return {
+                    name: 'FunctionLoopStatement',
+                    mandatory: [
+                        { name: 'body', type: 'array' }
+                    ]
+                };
+            }
+            case 'FunctionType': {
+                return {
+                    name: 'FunctionType',
+                    mandatory: [
+                        { name: 'argtypes', type: 'array' }
+                    ]
+                };
+            }
+            case 'GroupTransition': {
+                return {
+                    name: 'GroupTransition',
+                    mandatory: [
+                        { name: 'transitions', type: 'array' }
+                    ]
+                };
+            }
+            case 'InstantiationConnection': {
+                return {
+                    name: 'InstantiationConnection',
+                    mandatory: [
+                        { name: 'ports', type: 'array' }
+                    ]
+                };
+            }
+            case 'InterfaceType': {
+                return {
+                    name: 'InterfaceType',
+                    mandatory: [
+                        { name: 'porttypes', type: 'array' }
+                    ]
+                };
+            }
             case 'IterableExpression': {
                 return {
                     name: 'IterableExpression',
                     mandatory: [
                         { name: 'values', type: 'array' }
+                    ]
+                };
+            }
+            case 'IterableType': {
+                return {
+                    name: 'IterableType',
+                    mandatory: [
+                        { name: 'types', type: 'array' }
                     ]
                 };
             }
@@ -482,13 +1117,48 @@ export class MediatorAstReflection implements AstReflection {
                     ]
                 };
             }
+            case 'LoopStatement': {
+                return {
+                    name: 'LoopStatement',
+                    mandatory: [
+                        { name: 'body', type: 'array' }
+                    ]
+                };
+            }
+            case 'MultipleVariableTyping': {
+                return {
+                    name: 'MultipleVariableTyping',
+                    mandatory: [
+                        { name: 'vars', type: 'array' }
+                    ]
+                };
+            }
+            case 'PortConnection': {
+                return {
+                    name: 'PortConnection',
+                    mandatory: [
+                        { name: 'from', type: 'array' },
+                        { name: 'to', type: 'array' }
+                    ]
+                };
+            }
             case 'Program': {
                 return {
                     name: 'Program',
                     mandatory: [
+                        { name: 'automatons', type: 'array' },
                         { name: 'constdefs', type: 'array' },
-                        { name: 'typedefs', type: 'array' },
-                        { name: 'vars', type: 'array' }
+                        { name: 'functions', type: 'array' },
+                        { name: 'systems', type: 'array' },
+                        { name: 'typedefs', type: 'array' }
+                    ]
+                };
+            }
+            case 'SingleTransition': {
+                return {
+                    name: 'SingleTransition',
+                    mandatory: [
+                        { name: 'statements', type: 'array' }
                     ]
                 };
             }
@@ -507,6 +1177,26 @@ export class MediatorAstReflection implements AstReflection {
                     mandatory: [
                         { name: 'fields', type: 'array' },
                         { name: 'types', type: 'array' }
+                    ]
+                };
+            }
+            case 'Synchronization': {
+                return {
+                    name: 'Synchronization',
+                    mandatory: [
+                        { name: 'ports', type: 'array' }
+                    ]
+                };
+            }
+            case 'System': {
+                return {
+                    name: 'System',
+                    mandatory: [
+                        { name: 'components', type: 'array' },
+                        { name: 'connections', type: 'array' },
+                        { name: 'internals', type: 'array' },
+                        { name: 'ports', type: 'array' },
+                        { name: 'templates', type: 'array' }
                     ]
                 };
             }

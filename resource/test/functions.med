@@ -1,0 +1,320 @@
+typedef int as valueType;
+
+typedef enum {
+    prepareMsg,
+    promiseMsg,
+    acceptMsg,
+    acceptedMsg
+} as MessageType;
+
+typedef struct {
+    msgType: MessageType,
+    ballot: int
+} as PrepareMessage;
+
+typedef struct {
+    msgType: MessageType,
+    ballot: int,
+    acceptorId: int,
+    maxVBallot: int,
+    maxValue: valueType | null
+} as PromiseMessage;
+
+typedef struct {
+    msgType: MessageType,
+    ballot: int,
+    value: valueType
+} as AcceptMessage;
+
+typedef struct {
+    msgType: MessageType,
+    ballot: int,
+    value: valueType,
+    acceptorId: int
+} as AcceptedMessage;
+
+typedef PrepareMessage | PromiseMessage | AcceptMessage | AcceptedMessage as Message;
+
+typedef enum {
+    Prepare,
+    Promise,
+    Accept,
+    Accepted
+} as BasicState;
+
+function test(a: int): int {
+    variables {
+        value: int;
+    }
+    statements {
+        a = test<3>(  3  )    ;
+        return a;
+    }
+}
+
+automaton <qrmNum: int, initBallot: int, ballotStep: int> Proposer(
+    fromAcceptor: in PromiseMessage,
+    toAcceptor: out PrepareMessage | AcceptMessage
+) {
+    variables {
+        state: BasicState;
+        nextBallot: int;
+        promiseCount : int;
+        promiseRecv: (bool)[2 * qrmNum - 1];     // Specify number of acceptors?
+        candidateValue: valueType;
+        mostRecentBallot: int;
+    }
+
+    transitions {
+        // Prepare
+        state == Prepare && !toAcceptor.reqWrite -> toAcceptor.reqWrite = true;
+
+        state == Prepare && toAcceptor.reqWrite && toAcceptor.reqRead -> {
+            toAcceptor.value = struct {
+                msgType = prepareMsg, 
+                ballot = nextBallot
+            };
+            sync toAcceptor;
+            nextBallot += ballotStep;
+            state = Promise;
+        }
+
+        // Promise
+        group {
+            state == Promise && !fromAcceptor.reqRead -> fromAcceptor.reqRead = true;
+
+            state == Promise && fromAcceptor.reqWrite && fromAcceptor.reqRead -> {
+                sync fromAcceptor;
+                if (
+                    // receive a promise whose ballot number is the current one
+                    (   
+                        fromAcceptor.value.msgType == promiseMsg && 
+                        fromAcceptor.value.ballot == nextBallot - ballotStep
+                    ) &&
+                    // and it is the first time to receive promise from this acceptor
+                    !promiseRecv[fromAcceptor.value.acceptorId]
+                ) {
+                    promiseRecv[fromAcceptor.value.acceptorId] = true;
+                    promiseCount += 1;
+                    // update candidate value according to mostRecentBallot
+                    if (fromAcceptor.value.maxVBallot > mostRecentBallot) {
+                        mostRecentBallot = fromAcceptor.value.maxVBallot;
+                        candidateValue = fromAcceptor.value.maxValue;
+                    }
+                }
+
+                if (promiseCount >= qrmNum) {
+                    mostRecentBallot = -1;
+                    // TODO: reset promiseRecv to all false, require loop
+                    promiseCount = 0;
+                    state = Accept;
+                }
+            }
+
+            // may abandon
+            state == Promise -> {
+                fromAcceptor.reqRead = false;
+                mostRecentBallot = -1;
+                // TODO: reset promiseRecv to all false, require loop
+                promiseCount = 0;
+                state = Prepare;
+            }
+        }
+
+        // Accept
+        group {
+            state == Accept && !toAcceptor.reqWrite -> toAcceptor.reqWrite = true;
+
+            state == Accept && toAcceptor.reqRead && toAcceptor.reqWrite -> {
+                toAcceptor.value = struct {
+                    msgType = acceptMsg, 
+                    ballot = nextBallot - ballotStep, 
+                    value = candidateValue
+                };
+                sync toAcceptor;
+                state = Prepare;
+            }
+
+            // may abandon
+            state == Accept -> {
+                toAcceptor.reqWrite = false;
+                state = Prepare;
+            }
+        }
+    }
+}
+
+automaton <id: int>Acceptor(
+    fromProposer: in PrepareMessage | AcceptMessage,
+    toProposer: out PromiseMessage,
+    toLearner: out AcceptedMessage
+) {
+    variables {
+        state: BasicState;
+        candidateValue: valueType | null;
+        mostRecentBallot: int;
+        recvBallot: int;
+        lastAcceptedBallot: int;
+        lastAcceptedValue: valueType | null;
+    }
+    transitions {
+        // Prepare or Accept
+        state == Prepare && !fromProposer.reqRead -> fromProposer.reqRead = true;
+
+        state == Prepare && fromProposer.reqRead && fromProposer.reqWrite -> {
+            sync fromProposer;
+            // receive a new prepare request, send promise
+            if (fromProposer.value.msgType == prepareMsg && fromProposer.value.ballot > mostRecentBallot) {
+                mostRecentBallot = fromProposer.value.ballot;
+                state = Promise;
+            // receive a valid accept request, send accepted, update local variable
+            } else if (fromProposer.value.msgType == acceptMsg && fromProposer.value.ballot >= mostRecentBallot) {
+                mostRecentBallot = fromProposer.value.ballot;
+                lastAcceptedBallot = fromProposer.value.ballot;
+                lastAcceptedValue = fromProposer.value.valueue;
+                state = Accepted;
+            }
+        }
+
+        // Promise, should be atomic
+        state == Promise && !toProposer.reqWrite -> toProposer.reqWrite = true;
+
+        state == Promise && toProposer.reqRead && toProposer.reqWrite -> {
+            toProposer.value = struct {
+                msgType = promiseMsg, 
+                ballot = mostRecentBallot, 
+                acceptorId = id, 
+                maxVBallot = lastAcceptedBallot, 
+                maxValue = lastAcceptedValue
+            };
+            sync toProposer;
+            state = Prepare;
+        }
+
+        // Accepted, should be atomic
+        state == Accepted && !toLearner.reqWrite -> toLearner.reqWrite = true;
+
+        state == Accepted && toLearner.reqRead && toLearner.reqWrite -> {
+            toLearner.value = struct {
+                msgType = acceptedMsg,
+                ballot = lastAcceptedBallot,
+                value = lastAcceptedValue,
+                acceptorId = id
+            };
+            sync toLearner;
+            state = Prepare;
+        }
+    }
+}
+
+automaton <qrmNum: int> Learner(fromAcceptor: in AcceptedMessage) {
+    variables {
+        acceptedCount : int;
+        acceptedStatus: bool[2 * qrmNum - 1];
+        currentBallot: int;
+        chosenValue: valueType | null;
+        finish: bool;
+    }
+    transitions {
+        !fromAcceptor.reqRead -> fromAcceptor.reqRead = true;
+
+        fromAcceptor.reqRead && fromAcceptor.reqWrite -> {
+            sync fromAcceptor;
+            if (fromAcceptor.value.msgType == acceptedMsg) {
+                // always first consider newer ballot
+                if (fromAcceptor.value.ballot > currentBallot) {
+                    currentBallot = fromAcceptor.value.ballot;
+                    chosenValue = fromAcceptor.value.value;
+                    acceptedCount = 1;
+                    acceptedStatus[fromAcceptor.value.acceptorId] = true;
+                    // TODO: reset acceptedStatus to all false
+                } else if (fromAcceptor.value.ballot == currentBallot && !acceptedStatus[fromAcceptor.value.acceptorId]) {
+                    acceptedCount += 1;
+                    acceptedStatus[fromAcceptor.value.acceptorId] = true;
+                }
+
+                if (acceptedCount >= qrmNum) {
+                    finish = true;
+                }
+            }
+        }
+    }
+}
+
+automaton <MsgType: type, bufsize: int> FaultyAsync(inPort: in MsgType, outPort: out MsgType) {
+    variables {
+        buffer: (MsgType | null)[bufsize];
+        front: int;
+        rear: int;
+    }
+    transitions {
+        !inPort.reqRead -> inPort.reqRead = true;
+        // /* remove this transition to allow enqueue at any possible time */
+        // inPort.reqRead && buffer[rear] != null -> inPort.reqRead = false;
+
+        !outPort.reqWrite && buffer[front] != nil -> outPort.reqWrite = true;
+        outPort.reqWrite && buffer[front] == nil -> outPort.reqWrite = false;
+        // /* equivalent to the following single transition */
+        // outPort.reqWrite == (buffer[front] != null) -> outPort.reqWrite = (buffer[front] != null);
+
+        group {
+            // enquee at any possible time, so message may get lost due to the circular buffer
+            inPort.reqRead && inPort.reqWrite -> {
+                sync inPort;
+                buffer[rear] = inPort.value;
+                rear = (rear + 1) % bufsize;
+            }
+
+            // dequeue at any possible time
+            outPort.reqRead && outPort.reqWrite -> {
+                outPort.value = buffer[front];
+                sync outPort;
+                buffer[front] = nil;
+                front = (front + 1) % bufsize;
+            }
+
+            // duplicate a message at the tail
+            buffer[(rear - 1) % bufsize] != nil -> {
+                buffer[rear] = buffer[(rear - 1) % bufsize];
+                rear = (rear + 1) % bufsize;
+            }
+        }
+    }
+}
+
+system BasicPaxos() {
+    components {
+        // Proposer<qrmNum, initBallot, ballotStep>
+        proposer1: Proposer<2, 0, 2>;
+        proposer2: Proposer<2, 1, 2>;
+        // Acceptor<id>
+        acceptor1: Acceptor<0>;
+        acceptor2: Acceptor<1>;
+        acceptor3: Acceptor<2>;
+        // Learner<qrmNum>
+        learner: Learner<2>;
+        // FaultyAsync<MsgType, bufsize>
+        p2aChannel, a2pChannel: FaultyAsync</* Message, */10>;
+    }
+    connections {
+        (proposer1.toAcceptor, proposer2.toAcceptor) 
+            -(async, broadcast, capacity=10)-> 
+                p2aChannel.inPort;
+
+        p2aChannel.outPort 
+            -(async, broadcast, capacity=10)-> 
+                (acceptor1.fromProposer, acceptor2.fromProposer, acceptor3.fromProposer);
+        
+        (acceptor1.toProposer, acceptor2.toProposer, acceptor3.toProposer)
+            -(async, broadcast, capacity=10)->
+                a2pChannel.inPort;
+
+        a2pChannel.outPort
+            -(async, broadcast, capacity=10)->
+                (proposer1.fromAcceptor, proposer2.fromAcceptor);
+
+        (acceptor1.toLearner, acceptor2.toLearner, acceptor3.toLearner)
+            -(async, broadcast, capacity=10)->
+                learner.fromAcceptor;
+    }
+}
