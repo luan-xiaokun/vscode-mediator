@@ -1,0 +1,7 @@
+// const 3.1415926 as pi;
+// const 3 as three;
+// val: int;
+// const three as t;
+typedef enum {a, b, c} as abc;
+const a as b;
+const b as c;

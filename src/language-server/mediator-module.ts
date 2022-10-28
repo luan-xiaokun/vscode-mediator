@@ -4,6 +4,7 @@ import {
 } from 'langium';
 import { MediatorGeneratedModule, MediatorGeneratedSharedModule } from './generated/module';
 import { MediatorGenerator, Generator } from './mediator-generate';
+import { MediatorScopeComputation } from './mediator-scope-provider';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -36,6 +37,9 @@ export const MediatorModule: Module<MediatorServices, PartialLangiumServices & M
     // }
     generation: {
         MediatorGenerator: (services) => new MediatorGenerator(services)
+    },
+    references: {
+        ScopeComputation: (services) => new MediatorScopeComputation(services)
     }
 };
 

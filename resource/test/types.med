@@ -1,2 +1,28 @@
-int 2..3;
-int 2 .. 3;
+// primitive type
+typedef int as myint;
+typedef real as myreal;
+typedef char as mychar;
+typedef bool as mybool;
+typedef null as Null;
+
+// list type
+typedef int[] as intarray;
+typedef real[3] as real3array;
+typedef char[3][] as listchar3array;
+typedef bool[][5] as array5boollist;
+typedef null[][] as listlistnull;
+
+// union type
+typedef real | char as realchar;
+typedef int[] | real[] as intrealarray;
+typedef (int|real)[] as arrayintreal;
+typedef (int|real[])[] as arrayintrealarray;
+
+// typealias
+typedef myint as myint2;
+typedef myint as myint;
+
+// enum, struct
+typedef enum {enum1, enum2} as enumtype;
+typedef struct {a: enumtype, b: int} as structype;
+typedef struct {a: structype} [3] as structarray;

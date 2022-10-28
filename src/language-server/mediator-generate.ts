@@ -30,19 +30,19 @@ export class MediatorGenerator implements Generator {
     walkProgram(program: Program): void {
         // a program contains: type aliases, const definitions, functions, automatons, systems
         for (let typedef of program.typedefs) {
-            console.log("type alias: " + typedef.alias);
+            console.log("type alias: " + typedef.name);
         }
         for (let constdef of program.constdefs) {
-            console.log("type alias: " + constdef.alias);
+            console.log("type alias: " + constdef.name);
         }
-        for (let func of program.functions) {
-            console.log("function name: " + func.name);
-        }
-        for (let automaton of program.automatons) {
-            console.log("automaton name: " + automaton.name);
-        }
-        for (let system of program.systems) {
-            console.log("system name: " + system.name);
-        }
+        // for (let func of program.functions) {
+        //     console.log("function name: " + func.name);
+        // }
+        // for (let automaton of program.automatons) {
+        //     console.log("automaton name: " + automaton.name);
+        // }
+        // for (let system of program.systems) {
+        //     console.log("system name: " + system.name);
+        // }
     }
 }
