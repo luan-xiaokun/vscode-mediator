@@ -2587,33 +2587,6 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                     }
                   }
                 ]
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Action",
-                    "type": {
-                      "$refText": "FunctionCallExpression"
-                    }
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": "("
-                  },
-                  {
-                    "$type": "RuleCall",
-                    "rule": {
-                      "$refText": "ArgumentSequence"
-                    },
-                    "arguments": [],
-                    "cardinality": "?"
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": ")"
-                  }
-                ]
               }
             ],
             "cardinality": "*"
@@ -2729,20 +2702,6 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 },
                 "feature": "name",
                 "operator": "="
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Keyword",
-                    "value": "<"
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": ">"
-                  }
-                ],
-                "cardinality": "?"
               },
               {
                 "$type": "Keyword",

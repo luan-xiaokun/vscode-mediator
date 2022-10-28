@@ -35,7 +35,6 @@ PostfixExpression returns Expression:
     PrimaryExpression (
         ({IndexingExpression.base=current} '[' index=Expression ']')
         | ({AttributeExpression.previous=current} '.' field=([StructField:ID] | 'value' | 'reqRead' | 'reqWrite'))
-        | ({FunctionCallExpression} '(' ArgumentSequence? ')')
     )*;
 
 PrimaryExpression returns Expression:
@@ -47,7 +46,7 @@ PrimaryExpression returns Expression:
 
 FunctionCallExpression returns FunctionCallExpression:
     ({NamedExpression} element=[NamedElement:FeatureID])
-    ({FunctionCallExpression.name=current} ('<' '>')?'(' ArgumentSequence? ')')?;
+    ({FunctionCallExpression.name=current} '(' ArgumentSequence? ')')?;
 
 fragment ArgumentSequence:
     arguments+=Expression (',' arguments+=Expression)*;
