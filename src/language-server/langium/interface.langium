@@ -41,6 +41,11 @@ interface Function {
     statements: FunctionStatement[];
 }
 
+// TypeOrExpression
+type TypeOrExpression =
+    PrimitiveType | EnumType | StructType | Expression
+    | ListType | UnionType;
+
 // Connection
 type Connection = InstantiationConnection | PortConnection;
 
@@ -184,7 +189,7 @@ interface ComponentName {
 
 interface ComponentInstantiation {
     component: @NamedAutomaton;
-    templates: Expression[];
+    templates: TypeOrExpression[];
 }
 
 // Template Typing
@@ -229,8 +234,7 @@ interface AttributeExpression {
 
 interface FunctionCallExpression {
     name?: @NamedElement;
-    typetemplates?: Type[];
-    exprtemplates?: Expression[];
+    templates: TypeOrExpression[];
     arguments: Expression[];
 }
 

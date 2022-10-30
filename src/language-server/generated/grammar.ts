@@ -2704,6 +2704,54 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "operator": "="
               },
               {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "<"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "templates",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "TypeOrExpressionRule"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Keyword",
+                        "value": ","
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "templates",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$refText": "TypeOrExpressionRule"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ],
+                    "cardinality": "*"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ">"
+                  }
+                ],
+                "cardinality": "?"
+              },
+              {
                 "$type": "Keyword",
                 "value": "("
               },
@@ -5050,7 +5098,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "ComponentName"
+                "$refText": "ComponentNameRule"
               },
               "arguments": []
             }
@@ -5069,7 +5117,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "ComponentName"
+                    "$refText": "ComponentNameRule"
                   },
                   "arguments": []
                 }
@@ -5099,7 +5147,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "ComponentName",
+      "name": "ComponentNameRule",
       "returnType": {
         "$refText": "ComponentName"
       },
@@ -5164,7 +5212,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "AdditiveExpression"
+                    "$refText": "TypeOrExpressionRule"
                   },
                   "arguments": []
                 }
@@ -5183,7 +5231,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$refText": "AdditiveExpression"
+                        "$refText": "TypeOrExpressionRule"
                       },
                       "arguments": []
                     }
@@ -5420,6 +5468,122 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
       "hiddenTokens": [],
       "parameters": [],
       "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "TypeOrExpressionRule",
+      "returnType": {
+        "$refText": "TypeOrExpression"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "PrimitiveType"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "EnumType"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "StructTypeRule"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$refText": "EqualityExpression"
+                },
+                "arguments": []
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "ListType"
+                },
+                "feature": "base",
+                "operator": "="
+              },
+              {
+                "$type": "Keyword",
+                "value": "["
+              },
+              {
+                "$type": "Assignment",
+                "feature": "capacity",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "Expression"
+                  },
+                  "arguments": []
+                },
+                "cardinality": "?"
+              },
+              {
+                "$type": "Keyword",
+                "value": "]"
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "type": {
+                  "$refText": "UnionType"
+                },
+                "feature": "types",
+                "operator": "+="
+              },
+              {
+                "$type": "Keyword",
+                "value": "|"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "types",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$refText": "TypeOrExpressionRule"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
     }
   ],
   "types": [
@@ -5536,6 +5700,60 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
         }
       ],
       "name": "NamedType"
+    },
+    {
+      "$type": "Type",
+      "typeAlternatives": [
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "PrimitiveType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "EnumType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "StructType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "Expression"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "ListType"
+          },
+          "isArray": false,
+          "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "UnionType"
+          },
+          "isArray": false,
+          "isRef": false
+        }
+      ],
+      "name": "TypeOrExpression"
     },
     {
       "$type": "Type",
@@ -7343,7 +7561,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             {
               "$type": "AtomType",
               "refType": {
-                "$refText": "Expression"
+                "$refText": "TypeOrExpression"
               },
               "isArray": true,
               "isRef": false
@@ -7640,29 +7858,14 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             {
               "$type": "AtomType",
               "refType": {
-                "$refText": "Type"
+                "$refText": "TypeOrExpression"
               },
               "isArray": true,
               "isRef": false
             }
           ],
-          "name": "typetemplates",
-          "isOptional": true
-        },
-        {
-          "$type": "TypeAttribute",
-          "typeAlternatives": [
-            {
-              "$type": "AtomType",
-              "refType": {
-                "$refText": "Expression"
-              },
-              "isArray": true,
-              "isRef": false
-            }
-          ],
-          "name": "exprtemplates",
-          "isOptional": true
+          "name": "templates",
+          "isOptional": false
         },
         {
           "$type": "TypeAttribute",

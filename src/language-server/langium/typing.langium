@@ -16,13 +16,13 @@ PortTypingRule returns PortTyping:
 
 // Component Typing
 ComponentTypingRule returns ComponentTyping:
-    components+=ComponentName (',' names+=ComponentName)* ':' ComponentInstantiation;
+    components+=ComponentNameRule (',' names+=ComponentNameRule)* ':' ComponentInstantiation;
 
-ComponentName returns ComponentName:
+ComponentNameRule returns ComponentName:
     name=FeatureID;
 
 ComponentInstantiation returns ComponentInstantiation:
-    component=[NamedAutomaton:FeatureID] ('<' templates+=AdditiveExpression (',' templates+=AdditiveExpression)* '>')?;
+    component=[NamedAutomaton:FeatureID] ('<' templates+=TypeOrExpressionRule (',' templates+=TypeOrExpressionRule)* '>')?;
 
 // Template Typing
 SystemTemplateTyping returns TemplateTyping:

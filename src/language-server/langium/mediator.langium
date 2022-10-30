@@ -5,6 +5,7 @@ import './interface'
 import './statement'
 import './type'
 import './typing'
+import './typeorexpr'
 
 entry Program:
     (typedefs+=TypeDefinition | constdefs+=ConstDefinition | functions+=FunctionDefinition | automatons+=AutomatonDefinition | systems+=SystemDefinition)*;

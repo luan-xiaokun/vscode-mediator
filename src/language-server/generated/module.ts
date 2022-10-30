@@ -3,7 +3,7 @@
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 
-import { LangiumGeneratedServices, LangiumGeneratedSharedServices, LangiumSharedServices, LangiumServices, LanguageMetaData, Module } from 'langium';
+import { LangiumGeneratedServices, LangiumGeneratedSharedServices, LangiumSharedServices, LangiumServices, LanguageMetaData, Module, IParserConfig } from 'langium';
 import { MediatorAstReflection } from './ast';
 import { MediatorGrammar } from './grammar';
 
@@ -13,6 +13,10 @@ export const MediatorLanguageMetaData: LanguageMetaData = {
     caseInsensitive: false
 };
 
+export const parserConfig: IParserConfig = {
+    maxLookahead: 4,
+};
+
 export const MediatorGeneratedSharedModule: Module<LangiumSharedServices, LangiumGeneratedSharedServices> = {
     AstReflection: () => new MediatorAstReflection()
 };
@@ -20,5 +24,7 @@ export const MediatorGeneratedSharedModule: Module<LangiumSharedServices, Langiu
 export const MediatorGeneratedModule: Module<LangiumServices, LangiumGeneratedServices> = {
     Grammar: () => MediatorGrammar(),
     LanguageMetaData: () => MediatorLanguageMetaData,
-    parser: {}
+    parser: {
+        ParserConfig: () => parserConfig
+    }
 };

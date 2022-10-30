@@ -47,7 +47,7 @@ function test(a: int): int {
         value: int;
     }
     statements {
-        a = test<3>(  3  )    ;
+        a = test< (test<3>()), (3 + 2) [ ] >(  3  )    ;
         return a;
     }
 }

@@ -46,7 +46,7 @@ PrimaryExpression returns Expression:
 
 FunctionCallExpression returns FunctionCallExpression:
     ({NamedExpression} element=[NamedElement:FeatureID])
-    ({FunctionCallExpression.name=current} '(' ArgumentSequence? ')')?;
+    ({FunctionCallExpression.name=current} ('<' templates+=TypeOrExpressionRule (',' templates+=TypeOrExpressionRule)* '>')? '(' ArgumentSequence? ')')?;
 
 fragment ArgumentSequence:
     arguments+=Expression (',' arguments+=Expression)*;
