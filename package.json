@@ -53,7 +53,8 @@
         }
     },
     "activationEvents": [
-        "onLanguage:mediator", "onCommand:mediator.generate"
+        "onLanguage:mediator",
+        "onCommand:mediator.generate"
     ],
     "files": [
         "bin",
@@ -79,7 +80,7 @@
         "chalk": "^4.1.2",
         "chevrotain": "^9.1.0",
         "commander": "^8.0.0",
-        "langium": "^0.5.0",
+        "langium": "file:../langium-debug/langium/packages/langium",
         "vscode-languageclient": "^8.0.2",
         "vscode-languageserver": "^8.0.2",
         "vscode-uri": "^3.0.2"
@@ -91,7 +92,7 @@
         "@typescript-eslint/parser": "^5.28.0",
         "esbuild": "^0.15.12",
         "eslint": "^8.17.0",
-        "langium-cli": "^0.5.0",
+        "langium-cli": "file:../langium-debug/langium/packages/langium-cli",
         "typescript": "^4.7.4"
     },
     "license": "MIT"
