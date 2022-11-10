@@ -8,8 +8,5 @@
             "out": "syntaxes/mediator.tmLanguage.json"
         }
     }],
-    "out": "src/language-server/generated",
-    "chevrotainParserConfig": {
-        "maxLookahead": 4
-    }
+    "out": "src/language-server/generated"
 }

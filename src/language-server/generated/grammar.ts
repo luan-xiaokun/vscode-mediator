@@ -310,7 +310,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "InternalPort"
+                    "$refText": "InternalPortRule"
                   },
                   "arguments": []
                 }
@@ -329,7 +329,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$refText": "InternalPort"
+                        "$refText": "InternalPortRule"
                       },
                       "arguments": []
                     }
@@ -684,7 +684,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
       "name": "FunctionDefinition",
       "inferredType": {
         "$type": "InferredType",
-        "name": "Function"
+        "name": "FunctionDef"
       },
       "definition": {
         "$type": "Group",
@@ -1167,30 +1167,54 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
         "name": "AutomatonPort"
       },
       "definition": {
-        "$type": "Group",
+        "$type": "Alternatives",
         "elements": [
           {
-            "$type": "Assignment",
-            "feature": "automaton",
-            "operator": "=",
-            "terminal": {
-              "$type": "CrossReference",
-              "type": {
-                "$refText": "NamedAutomaton"
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "automaton",
+                "operator": "=",
+                "terminal": {
+                  "$type": "CrossReference",
+                  "type": {
+                    "$refText": "NamedAutomaton"
+                  },
+                  "terminal": {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$refText": "FeatureID"
+                    },
+                    "arguments": []
+                  },
+                  "deprecatedSyntax": false
+                }
               },
-              "terminal": {
-                "$type": "RuleCall",
-                "rule": {
-                  "$refText": "FeatureID"
-                },
-                "arguments": []
+              {
+                "$type": "Keyword",
+                "value": "."
               },
-              "deprecatedSyntax": false
-            }
-          },
-          {
-            "$type": "Keyword",
-            "value": "."
+              {
+                "$type": "Assignment",
+                "feature": "port",
+                "operator": "=",
+                "terminal": {
+                  "$type": "CrossReference",
+                  "type": {
+                    "$refText": "PortTyping"
+                  },
+                  "terminal": {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$refText": "FeatureID"
+                    },
+                    "arguments": []
+                  },
+                  "deprecatedSyntax": false
+                }
+              }
+            ]
           },
           {
             "$type": "Assignment",
@@ -1199,12 +1223,12 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "CrossReference",
               "type": {
-                "$refText": "PortTyping"
+                "$refText": "InternalPort"
               },
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$refText": "FeatureID"
+                  "$refText": "ID"
                 },
                 "arguments": []
               },
@@ -1337,7 +1361,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "InternalPort",
+      "name": "InternalPortRule",
       "inferredType": {
         "$type": "InferredType",
         "name": "InternalPort"
@@ -1428,11 +1452,23 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "feature": "statements",
                 "operator": "+=",
                 "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$refText": "StatementOrSynchronization"
-                  },
-                  "arguments": []
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Statement"
+                      },
+                      "arguments": []
+                    },
+                    {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Synchronization"
+                      },
+                      "arguments": []
+                    }
+                  ]
                 }
               },
               {
@@ -1447,11 +1483,23 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                     "feature": "statements",
                     "operator": "+=",
                     "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$refText": "StatementOrSynchronization"
-                      },
-                      "arguments": []
+                      "$type": "Alternatives",
+                      "elements": [
+                        {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$refText": "Statement"
+                          },
+                          "arguments": []
+                        },
+                        {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$refText": "Synchronization"
+                          },
+                          "arguments": []
+                        }
+                      ]
                     },
                     "cardinality": "+"
                   },
@@ -1506,74 +1554,6 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
           {
             "$type": "Keyword",
             "value": "}"
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "StatementOrSynchronization",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "StatementOrSynchronization"
-      },
-      "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "Statement"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "Synchronization"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "FeatureID",
-      "dataType": "string",
-      "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "Keyword",
-            "value": "value"
-          },
-          {
-            "$type": "Keyword",
-            "value": "reqRead"
-          },
-          {
-            "$type": "Keyword",
-            "value": "reqWrite"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "ID"
-            },
-            "arguments": []
           }
         ]
       },
@@ -1873,7 +1853,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "LoopVariableDeclaration"
+                "$refText": "LoopVariableDeclarationRule"
               },
               "arguments": []
             }
@@ -1968,7 +1948,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "LoopVariableDeclaration",
+      "name": "LoopVariableDeclarationRule",
       "inferredType": {
         "$type": "InferredType",
         "name": "LoopVariableDeclaration"
@@ -2442,7 +2422,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "LoopVariableDeclaration"
+                "$refText": "LoopVariableDeclarationRule"
               },
               "arguments": []
             }
@@ -2537,7 +2517,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "VariableTyping",
+      "name": "VariableTypingRule",
       "inferredType": {
         "$type": "InferredType",
         "name": "VariableTyping"
@@ -2552,7 +2532,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "VariableName"
+                "$refText": "VariableNameRule"
               },
               "arguments": []
             }
@@ -2599,7 +2579,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "VariableName"
+                "$refText": "VariableNameRule"
               },
               "arguments": []
             }
@@ -2618,7 +2598,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "VariableName"
+                    "$refText": "VariableNameRule"
                   },
                   "arguments": []
                 }
@@ -2653,7 +2633,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "VariableName",
+      "name": "VariableNameRule",
       "inferredType": {
         "$type": "InferredType",
         "name": "VariableName"
@@ -2679,7 +2659,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "PortTyping",
+      "name": "PortTypingRule",
       "inferredType": {
         "$type": "InferredType",
         "name": "PortTyping"
@@ -2726,7 +2706,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "ComponentTyping",
+      "name": "ComponentTypingRule",
       "inferredType": {
         "$type": "InferredType",
         "name": "ComponentTyping"
@@ -2741,7 +2721,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "ComponentName"
+                "$refText": "ComponentNameRule"
               },
               "arguments": []
             }
@@ -2755,12 +2735,12 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
               },
               {
                 "$type": "Assignment",
-                "feature": "names",
+                "feature": "components",
                 "operator": "+=",
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "ComponentName"
+                    "$refText": "ComponentNameRule"
                   },
                   "arguments": []
                 }
@@ -2773,11 +2753,16 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "value": ":"
           },
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "ComponentInstantiation"
-            },
-            "arguments": []
+            "$type": "Assignment",
+            "feature": "type",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$refText": "ComponentInstantiation"
+              },
+              "arguments": []
+            }
           }
         ]
       },
@@ -2790,7 +2775,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "ComponentName",
+      "name": "ComponentNameRule",
       "inferredType": {
         "$type": "InferredType",
         "name": "ComponentName"
@@ -3146,7 +3131,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$refText": "StructType"
+                  "$refText": "StructTypeRule"
                 },
                 "arguments": []
               },
@@ -3166,7 +3151,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "$type": "Action",
                 "inferredType": {
                   "$type": "InferredType",
-                  "name": "ListType"
+                  "name": "ListTypeOrExpression"
                 },
                 "feature": "base",
                 "operator": "="
@@ -3202,7 +3187,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "$type": "Action",
                 "inferredType": {
                   "$type": "InferredType",
-                  "name": "UnionType"
+                  "name": "UnionTypeOrExpression"
                 },
                 "feature": "types",
                 "operator": "+="
@@ -3900,13 +3885,13 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "PostfixExpression"
+                    "$refText": "ExponentExpression"
                   },
                   "arguments": []
                 }
               }
             ],
-            "cardinality": "*"
+            "cardinality": "?"
           }
         ]
       },
@@ -3988,13 +3973,13 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                     "value": "."
                   },
                   {
-                    "$type": "Assignment",
-                    "feature": "field",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "Alternatives",
-                      "elements": [
-                        {
+                    "$type": "Alternatives",
+                    "elements": [
+                      {
+                        "$type": "Assignment",
+                        "feature": "field",
+                        "operator": "=",
+                        "terminal": {
                           "$type": "CrossReference",
                           "type": {
                             "$refText": "StructField"
@@ -4007,16 +3992,31 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                             "arguments": []
                           },
                           "deprecatedSyntax": false
-                        },
-                        {
-                          "$type": "RuleCall",
-                          "rule": {
-                            "$refText": "PortKeyword"
-                          },
-                          "arguments": []
                         }
-                      ]
-                    }
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "portField",
+                        "operator": "=",
+                        "terminal": {
+                          "$type": "Alternatives",
+                          "elements": [
+                            {
+                              "$type": "Keyword",
+                              "value": "value"
+                            },
+                            {
+                              "$type": "Keyword",
+                              "value": "reqRead"
+                            },
+                            {
+                              "$type": "Keyword",
+                              "value": "reqWrite"
+                            }
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ]
               }
@@ -4045,7 +4045,35 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
           {
             "$type": "RuleCall",
             "rule": {
-              "$refText": "Literal"
+              "$refText": "IntLiteral"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "RealLiteral"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "CharLiteral"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "BoolLiteral"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "NullLiteral"
             },
             "arguments": []
           },
@@ -4505,37 +4533,130 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "Literal",
+      "name": "IntLiteral",
+      "definition": {
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "rule": {
+            "$refText": "INT"
+          },
+          "arguments": []
+        }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "RealLiteral",
+      "definition": {
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "rule": {
+            "$refText": "REAL"
+          },
+          "arguments": []
+        }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "CharLiteral",
+      "definition": {
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "rule": {
+            "$refText": "CHAR"
+          },
+          "arguments": []
+        }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "BoolLiteral",
+      "definition": {
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "rule": {
+            "$refText": "BOOL"
+          },
+          "arguments": []
+        }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "NullLiteral",
+      "definition": {
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "rule": {
+            "$refText": "NULL"
+          },
+          "arguments": []
+        }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Type",
       "inferredType": {
         "$type": "InferredType",
-        "name": "Literal"
+        "name": "Type"
       },
       "definition": {
-        "$type": "Alternatives",
+        "$type": "Group",
         "elements": [
           {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "IntLiteral"
-                }
-              },
-              {
-                "$type": "Assignment",
-                "feature": "value",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$refText": "INT"
-                  },
-                  "arguments": []
-                }
-              }
-            ]
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "ListType"
+            },
+            "arguments": []
           },
           {
             "$type": "Group",
@@ -4544,94 +4665,29 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "$type": "Action",
                 "inferredType": {
                   "$type": "InferredType",
-                  "name": "RealLiteral"
-                }
+                  "name": "UnionType"
+                },
+                "feature": "subtypes",
+                "operator": "+="
+              },
+              {
+                "$type": "Keyword",
+                "value": "|"
               },
               {
                 "$type": "Assignment",
-                "feature": "value",
-                "operator": "=",
+                "feature": "subtypes",
+                "operator": "+=",
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "REAL"
+                    "$refText": "Type"
                   },
                   "arguments": []
                 }
               }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "CharLiteral"
-                }
-              },
-              {
-                "$type": "Assignment",
-                "feature": "value",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$refText": "CHAR"
-                  },
-                  "arguments": []
-                }
-              }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "BoolLiteral"
-                }
-              },
-              {
-                "$type": "Assignment",
-                "feature": "value",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$refText": "BOOL"
-                  },
-                  "arguments": []
-                }
-              }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "NullLiteral"
-                }
-              },
-              {
-                "$type": "Assignment",
-                "feature": "value",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$refText": "NULL"
-                  },
-                  "arguments": []
-                }
-              }
-            ]
+            ],
+            "cardinality": "*"
           }
         ]
       },
@@ -4644,7 +4700,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "Type",
+      "name": "ListType",
       "inferredType": {
         "$type": "InferredType",
         "name": "Type"
@@ -4672,7 +4728,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$refText": "StructType"
+                  "$refText": "StructTypeRule"
                 },
                 "arguments": []
               },
@@ -4727,37 +4783,6 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
               }
             ],
             "cardinality": "*"
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "UnionType"
-                },
-                "feature": "types",
-                "operator": "+="
-              },
-              {
-                "$type": "Keyword",
-                "value": "|"
-              },
-              {
-                "$type": "Assignment",
-                "feature": "types",
-                "operator": "+=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$refText": "Type"
-                  },
-                  "arguments": []
-                }
-              }
-            ],
-            "cardinality": "*"
           }
         ]
       },
@@ -4777,7 +4802,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
       },
       "definition": {
         "$type": "Assignment",
-        "feature": "primitiveType",
+        "feature": "name",
         "operator": "=",
         "terminal": {
           "$type": "Alternatives",
@@ -4800,7 +4825,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             },
             {
               "$type": "Keyword",
-              "value": "null"
+              "value": "Null"
             }
           ]
         }
@@ -4837,7 +4862,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "EnumMember"
+                "$refText": "EnumMemberRule"
               },
               "arguments": []
             }
@@ -4856,7 +4881,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "EnumMember"
+                    "$refText": "EnumMemberRule"
                   },
                   "arguments": []
                 }
@@ -4879,7 +4904,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "EnumMember",
+      "name": "EnumMemberRule",
       "inferredType": {
         "$type": "InferredType",
         "name": "EnumMember"
@@ -4905,7 +4930,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "StructType",
+      "name": "StructTypeRule",
       "inferredType": {
         "$type": "InferredType",
         "name": "StructType"
@@ -5184,11 +5209,8 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
         "$type": "Alternatives",
         "elements": [
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "AbstractType"
-            },
-            "arguments": []
+            "$type": "Keyword",
+            "value": "type"
           },
           {
             "$type": "RuleCall",
@@ -5215,21 +5237,6 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "AbstractType",
-      "dataType": "string",
-      "definition": {
-        "$type": "Keyword",
-        "value": "type"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
       "name": "NonInterfaceParameterType",
       "inferredType": {
         "$type": "InferredType",
@@ -5239,11 +5246,8 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
         "$type": "Alternatives",
         "elements": [
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$refText": "AbstractType"
-            },
-            "arguments": []
+            "$type": "Keyword",
+            "value": "type"
           },
           {
             "$type": "RuleCall",
@@ -5421,7 +5425,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "PortKeyword",
+      "name": "FeatureID",
       "dataType": "string",
       "definition": {
         "$type": "Alternatives",
@@ -5437,8 +5441,54 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
           {
             "$type": "Keyword",
             "value": "reqWrite"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "ID"
+            },
+            "arguments": []
           }
         ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "BOOL",
+      "dataType": "string",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "true"
+          },
+          {
+            "$type": "Keyword",
+            "value": "false"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "NULL",
+      "dataType": "string",
+      "definition": {
+        "$type": "Keyword",
+        "value": "null"
       },
       "definesHiddenTokens": false,
       "entry": false,
@@ -5556,52 +5606,6 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
       "definition": {
         "$type": "RegexToken",
         "regex": "'[^'\\\\\\\\\\\\s]'|'\\\\\\\\[abtnvfr0e\\\\\\\\']'|' '"
-      },
-      "fragment": false,
-      "hidden": false
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "BOOL",
-      "type": {
-        "$type": "ReturnType",
-        "name": "boolean"
-      },
-      "definition": {
-        "$type": "TerminalAlternatives",
-        "elements": [
-          {
-            "$type": "CharacterRange",
-            "left": {
-              "$type": "Keyword",
-              "value": "true"
-            }
-          },
-          {
-            "$type": "CharacterRange",
-            "left": {
-              "$type": "Keyword",
-              "value": "false"
-            }
-          }
-        ]
-      },
-      "fragment": false,
-      "hidden": false
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "NULL",
-      "type": {
-        "$type": "ReturnType",
-        "name": "string"
-      },
-      "definition": {
-        "$type": "CharacterRange",
-        "left": {
-          "$type": "Keyword",
-          "value": "nil"
-        }
       },
       "fragment": false,
       "hidden": false
@@ -5774,7 +5778,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
         {
           "$type": "AtomType",
           "refType": {
-            "$refText": "Function"
+            "$refText": "FunctionDef"
           },
           "isArray": false,
           "isRef": false

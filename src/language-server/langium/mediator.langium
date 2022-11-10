@@ -37,7 +37,7 @@ AutomatonDefinition infers Automaton:
 ;
 
 // Function Definition
-FunctionDefinition infers Function:
+FunctionDefinition infers FunctionDef:
     'function' ('<' NonSystemTemplateList '>')? name=FeatureID
     '(' (arguments+=VariableTyping (',' arguments+=VariableTyping)*)? ')' ':' returntype=Type
     '{' 
@@ -46,7 +46,7 @@ FunctionDefinition infers Function:
     '}';
 
 // Named Identifiers
-type NamedElement = VariableName | ConstDef | EnumMember | StructField | PortTyping | LoopVariableDeclaration | TemplateTyping | Function;
+type NamedElement = VariableName | ConstDef | EnumMember | StructField | PortTyping | LoopVariableDeclaration | TemplateTyping | FunctionDef;
 
 type NamedAutomaton = ComponentName | Automaton;
 
@@ -65,7 +65,7 @@ PortConnection infers PortConnection:
     (to+=AutomatonPort | '(' to+=AutomatonPort (',' to+=AutomatonPort)* ')');
 
 AutomatonPort infers AutomatonPort:
-    automaton=[NamedAutomaton:FeatureID] '.' port=[PortTyping:FeatureID];
+    automaton=[NamedAutomaton:FeatureID] '.' port=[PortTyping:FeatureID] | port=[InternalPort:ID];
 
 PortConnectionOption infers PortConnectionOption:
     (sync='sync' ',' cast=('broadcast' | 'unicast'))
@@ -80,17 +80,11 @@ Transition infers Transition:
 
 SingleTransition infers SingleTransition:
     // (urgent?='urgent')?
-    guard=Expression '->' (statements+=StatementOrSynchronization | '{' (statements+=StatementOrSynchronization)+ '}');
+    guard=Expression '->' (statements+=(Statement | Synchronization) | '{' (statements+=(Statement | Synchronization))+ '}');
 
 GroupTransition infers GroupTransition:
     // (urgent?='urgent')?
     'group' '{' (transitions+=SingleTransition)+ '}';
-
-StatementOrSynchronization infers StatementOrSynchronization:
-    Statement | Synchronization;
-
-FeatureID returns string:
-    'value' | 'reqRead' | 'reqWrite' | ID;
 
 // Statement
 Statement infers Statement:
@@ -136,7 +130,6 @@ FunctionLoopStatement infers FunctionLoopStatement:
     '(' declaration=LoopVariableDeclaration ';' condition=Expression ';' update=LoopVariableUpdate ')'
     (body+=FunctionStatement | '{' (body+=FunctionStatement)* '}');
 
-
 // Variable Typing
 VariableTyping infers VariableTyping:
     var=VariableName ':' type=Type;
@@ -153,7 +146,7 @@ PortTyping infers PortTyping:
 
 // Component Typing
 ComponentTyping infers ComponentTyping:
-    components+=ComponentName (',' names+=ComponentName)* ':' ComponentInstantiation;
+    components+=ComponentName (',' components+=ComponentName)* ':' type=ComponentInstantiation;
 
 ComponentName infers ComponentName:
     name=FeatureID;
@@ -174,13 +167,11 @@ fragment SystemTemplateList:
 fragment NonSystemTemplateList:
     templates+=NonSystemTemplateTyping (',' templates+=NonSystemTemplateTyping)*;
 
-
 // Type Or Expression
 TypeOrExpression infers TypeOrExpression:
     (PrimitiveType | EnumType | StructType | EqualityExpression)
-    ({infer ListType.base=current} '[' (capacity=Expression)? ']')*
-    ({infer UnionType.types+=current} '|' types+=TypeOrExpression)*;
-
+    ({infer ListTypeOrExpression.base=current} '[' (capacity=Expression)? ']')*
+    ({infer UnionTypeOrExpression.types+=current} '|' types+=TypeOrExpression)*;
 
 // Expression
 Expression infers Expression:
@@ -211,16 +202,16 @@ PrefixExpression infers Expression:
     ({infer PrefixExpression} operator=('+'|'-') operand=PrefixExpression) | ExponentExpression;
 
 ExponentExpression infers Expression:
-    PostfixExpression ({infer BinaryExpression.left=current} operator='**' right=PostfixExpression)*;
+    PostfixExpression ({infer BinaryExpression.left=current} operator='**' right=ExponentExpression)?;
 
 PostfixExpression infers Expression:
     PrimaryExpression (
         ({infer IndexingExpression.base=current} '[' index=Expression ']')
-        | ({infer AttributeExpression.previous=current} '.' field=([StructField:ID] | PortKeyword))
+        | ({infer AttributeExpression.previous=current} '.' (field=[StructField:ID] | portField=('value' | 'reqRead' | 'reqWrite')))
     )*;
 
 PrimaryExpression infers Expression:
-    Literal
+    IntLiteral | RealLiteral | CharLiteral | BoolLiteral | NullLiteral
     | FunctionCallExpression
     | StructExpression
     | ListExpression
@@ -243,20 +234,33 @@ BracketExpression infers Expression:
     '(' Expression ({infer TupleExpression.values+=current} ',' values+=Expression)* ','? ')';
 
 // Literal
-Literal infers Literal:
-    ({infer IntLiteral} value=INT) | ({infer RealLiteral} value=REAL) | ({infer CharLiteral} value=CHAR)
-    | ({infer BoolLiteral} value=BOOL) | ({infer NullLiteral} value=NULL);
+IntLiteral:
+    value=INT;
 
+RealLiteral:
+    value=REAL;
+
+CharLiteral:
+    value=CHAR;
+
+BoolLiteral:
+    value=BOOL;
+
+NullLiteral:
+    value=NULL;
 
 // Type
 Type infers Type:
+    ListType
+    ({infer UnionType.subtypes+=current} '|' subtypes+=Type)*;
+
+ListType infers Type:
     (PrimitiveType | EnumType | StructType | AliasType | BracketType)
     // the precedence of list is higher than union
-    ({infer ListType.base=current} '[' (capacity=Expression)? ']')*
-    ({infer UnionType.types+=current} '|' types+=Type)*;
+    ({infer ListType.base=current} '[' (capacity=Expression)? ']')*;
 
 PrimitiveType infers PrimitiveType:
-    primitiveType=('int' | 'real' | 'char' | 'bool' | 'null');
+    name=('int' | 'real' | 'char' | 'bool' | 'Null');
 
 EnumType infers EnumType:
     'enum' '{' members+=EnumMember (',' members+=EnumMember)* '}';
@@ -282,13 +286,10 @@ PortType infers PortType:
 
 // Parameter Type
 ParameterType infers ParameterType:
-    AbstractType | FunctionType | InterfaceType;
-
-AbstractType returns string:
-    'type';
+    'type' | FunctionType | InterfaceType;
 
 NonInterfaceParameterType infers NonInterfaceParameterType:
-    AbstractType | FunctionType;
+    'type' | FunctionType;
 
 FunctionType infers FunctionType:
     'func' '(' (argtypes+=Type (',' argtypes+=Type)*)? ')' ':' returntype=Type;
@@ -296,15 +297,20 @@ FunctionType infers FunctionType:
 InterfaceType infers InterfaceType:
     'interface' '(' (porttypes+=PortType (',' porttypes+=PortType)*)? ')';
 
-PortKeyword returns string:
-    'value' | 'reqRead' | 'reqWrite';
+// Datatype rule
+FeatureID returns string:
+    'value' | 'reqRead' | 'reqWrite' | ID;
+
+BOOL returns string:
+    'true' | 'false';
+
+NULL returns string:
+    'null';
 
 // Lexical rules
 terminal REAL returns number: DECFRAC EXPONENT? | DECSEQ EXPONENT;
 terminal INT returns number: BINSEQ | OCTSEQ | HEXSEQ | DECSEQ;
 terminal CHAR returns string: /'[^'\\\s]'|'\\[abtnvfr0e\\']'|' '/;
-terminal BOOL returns boolean: 'true' | 'false';
-terminal NULL returns string: 'nil';
 terminal ID returns string: /[a-zA-Z_]\w*/;
 
 terminal fragment BINSEQ: /0[bB][01]+/;

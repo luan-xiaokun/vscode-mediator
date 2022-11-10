@@ -1,6 +1,6 @@
 import { AstNode, AstNodeDescription, DefaultScopeComputation, DefaultScopeProvider, interruptAndCheck, LangiumDocument, LangiumServices, MultiMap, PrecomputedScopes, ReferenceInfo, Scope, streamAllContents } from "langium";
 import { CancellationToken } from "vscode-jsonrpc";
-import { isEnumType, isIterableType, isTypeDef, Type, isComponentName, ComponentTyping, isVariableName, VariableTyping, MultipleVariableTyping, isEnumMember, isFunction, isAutomaton, isSystem, isLoopStatement, isFunctionLoopStatement } from "./generated/ast";
+import { isEnumType, isTypeDef, Type, isComponentName, ComponentTyping, isVariableName, VariableTyping, MultipleVariableTyping, isEnumMember, isFunctionDef, isAutomaton, isSystem, isLoopStatement, isFunctionLoopStatement, isTupleType, isUnionType } from "./generated/ast";
 
 export class MediatorScopeComputation extends DefaultScopeComputation {
     constructor(services: LangiumServices) {
@@ -24,14 +24,15 @@ export class MediatorScopeComputation extends DefaultScopeComputation {
             const name = this.nameProvider.getName(node);
             if (name) {
                 scopes.add(container, this.descriptions.createDescription(node, name, document));
-                if (isComponentName(node))
+                if (isComponentName(node)) {
                     scopes.add((container as ComponentTyping).$container, this.descriptions.createDescription(node, name, document));
+                }
                 else if (isVariableName(node))
                     scopes.add((container as VariableTyping | MultipleVariableTyping).$container, this.descriptions.createDescription(node, name, document));
                 else if (isEnumMember(node)) {
                     let parent = container;
                     const isCorrectScope = (n: unknown) => {
-                        return isTypeDef(n) || isFunction(n) || isAutomaton(n) || isSystem(n) || isLoopStatement(n) || isFunctionLoopStatement(n)
+                        return isTypeDef(n) || isFunctionDef(n) || isAutomaton(n) || isSystem(n) || isLoopStatement(n) || isFunctionLoopStatement(n)
                     };
                     while (parent.$container && !isCorrectScope(parent.$container)) {
                         parent = parent.$container;
@@ -52,8 +53,12 @@ export class MediatorScopeComputation extends DefaultScopeComputation {
                 const name = this.nameProvider.getName(member);
                 if (name) scopes.add(container, this.descriptions.createDescription(member, name, document));
             }
-        } else if (isIterableType(node)) {
+        } else if (isTupleType(node)) {
             for (const subnode of node.types) {
+                this.processEnumTypeDef(subnode, container, document, scopes);
+            }
+        } else if (isUnionType(node)) {
+            for (const subnode of node.subtypes) {
                 this.processEnumTypeDef(subnode, container, document, scopes);
             }
         }
