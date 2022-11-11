@@ -3,14 +3,14 @@ typedef int as myint;
 typedef real as myreal;
 typedef char as mychar;
 typedef bool as mybool;
-typedef null as Null;
+typedef Null as nil;
 
 // list type
 typedef int[] as intarray;
 typedef real[3] as real3array;
 typedef char[3][] as listchar3array;
 typedef bool[][5] as array5boollist;
-typedef null[][] as listlistnull;
+typedef Null[][] as listlistnull;
 
 // union type
 typedef real | char as realchar;
