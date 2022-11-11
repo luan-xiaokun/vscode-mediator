@@ -196,7 +196,7 @@ AdditiveExpression infers Expression:
     MultiplicativeExpression ({infer BinaryExpression.left=current} operator=('+'|'-') right=MultiplicativeExpression)*;
 
 MultiplicativeExpression infers Expression:
-    PrefixExpression ({infer BinaryExpression.left=current} oeprator=('*'|'/'|'%') right=PrefixExpression)*;
+    PrefixExpression ({infer BinaryExpression.left=current} operator=('*'|'/'|'%') right=PrefixExpression)*;
 
 PrefixExpression infers Expression:
     ({infer PrefixExpression} operator=('+'|'-') operand=PrefixExpression) | ExponentExpression;
@@ -217,7 +217,7 @@ PrimaryExpression infers Expression:
     | ListExpression
     | BracketExpression;
 
-FunctionCallExpression infers FunctionCallExpression:
+FunctionCallExpression infers Expression:
     ({infer NamedExpression} element=[NamedElement:FeatureID])
     ({infer FunctionCallExpression.name=current} ('<' templates+=TypeOrExpression (',' templates+=TypeOrExpression)* '>')? '(' ArgumentSequence? ')')?;
 

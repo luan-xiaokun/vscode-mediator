@@ -17,7 +17,7 @@ export function isConnection(item: unknown): item is Connection {
     return reflection.isInstance(item, Connection);
 }
 
-export type Expression = AttributeExpression | BinaryExpression | BoolLiteral | CharLiteral | ConditionalExpression | FunctionCallExpression | IndexingExpression | IntLiteral | ListExpression | NullLiteral | PrefixExpression | RealLiteral | StructExpression | TupleExpression;
+export type Expression = AttributeExpression | BinaryExpression | BoolLiteral | CharLiteral | ConditionalExpression | FunctionCallExpression | IndexingExpression | IntLiteral | ListExpression | NamedExpression | NullLiteral | PrefixExpression | RealLiteral | StructExpression | TupleExpression;
 
 export const Expression = 'Expression';
 
@@ -76,8 +76,6 @@ export const ParameterType = 'ParameterType';
 export function isParameterType(item: unknown): item is ParameterType {
     return reflection.isInstance(item, ParameterType);
 }
-
-export type PortKeyword = 'reqRead' | 'reqWrite' | 'value';
 
 export type Statement = AssignmentStatement | ConditionalStatement | LoopStatement;
 
@@ -180,8 +178,7 @@ export function isAutomatonPort(item: unknown): item is AutomatonPort {
 export interface BinaryExpression extends AstNode {
     readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     left: Expression
-    oeprator?: '%' | '*' | '/'
-    operator?: '!=' | '&&' | '**' | '+' | '-' | '<' | '<=' | '==' | '>' | '>=' | '||'
+    operator: '!=' | '%' | '&&' | '*' | '**' | '+' | '-' | '/' | '<' | '<=' | '==' | '>' | '>=' | '||'
     right: Expression
 }
 
@@ -531,7 +528,7 @@ export function isMultipleVariableTyping(item: unknown): item is MultipleVariabl
     return reflection.isInstance(item, MultipleVariableTyping);
 }
 
-export interface NamedExpression extends FunctionCallExpression {
+export interface NamedExpression extends AstNode {
     readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     element: Reference<NamedElement>
 }
@@ -934,6 +931,7 @@ export class MediatorAstReflection implements AstReflection {
             case IndexingExpression:
             case IntLiteral:
             case ListExpression:
+            case NamedExpression:
             case NullLiteral:
             case PrefixExpression:
             case RealLiteral:
@@ -959,7 +957,6 @@ export class MediatorAstReflection implements AstReflection {
                 return this.isSubtype(NamedElement, supertype);
             }
             case EnumType:
-            case ListType:
             case PrimitiveType:
             case StructType: {
                 return this.isSubtype(TypeOrExpression, supertype) || this.isSubtype(Type, supertype);
@@ -987,9 +984,6 @@ export class MediatorAstReflection implements AstReflection {
             case UnionTypeOrExpression:
             case Expression: {
                 return this.isSubtype(TypeOrExpression, supertype);
-            }
-            case NamedExpression: {
-                return this.isSubtype(FunctionCallExpression, supertype);
             }
             case TemplateTyping: {
                 return this.isSubtype(NamedElement, supertype) || this.isSubtype(NamedType, supertype);
@@ -1177,15 +1171,6 @@ export class MediatorAstReflection implements AstReflection {
                     name: 'MultipleVariableTyping',
                     mandatory: [
                         { name: 'vars', type: 'array' }
-                    ]
-                };
-            }
-            case 'NamedExpression': {
-                return {
-                    name: 'NamedExpression',
-                    mandatory: [
-                        { name: 'arguments', type: 'array' },
-                        { name: 'templates', type: 'array' }
                     ]
                 };
             }

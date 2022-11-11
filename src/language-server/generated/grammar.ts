@@ -310,7 +310,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "InternalPortRule"
+                    "$refText": "InternalPort"
                   },
                   "arguments": []
                 }
@@ -329,7 +329,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$refText": "InternalPortRule"
+                        "$refText": "InternalPort"
                       },
                       "arguments": []
                     }
@@ -1361,7 +1361,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "InternalPortRule",
+      "name": "InternalPort",
       "inferredType": {
         "$type": "InferredType",
         "name": "InternalPort"
@@ -1853,7 +1853,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "LoopVariableDeclarationRule"
+                "$refText": "LoopVariableDeclaration"
               },
               "arguments": []
             }
@@ -1948,7 +1948,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "LoopVariableDeclarationRule",
+      "name": "LoopVariableDeclaration",
       "inferredType": {
         "$type": "InferredType",
         "name": "LoopVariableDeclaration"
@@ -2422,7 +2422,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "LoopVariableDeclarationRule"
+                "$refText": "LoopVariableDeclaration"
               },
               "arguments": []
             }
@@ -2517,7 +2517,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "VariableTypingRule",
+      "name": "VariableTyping",
       "inferredType": {
         "$type": "InferredType",
         "name": "VariableTyping"
@@ -2532,7 +2532,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "VariableNameRule"
+                "$refText": "VariableName"
               },
               "arguments": []
             }
@@ -2579,7 +2579,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "VariableNameRule"
+                "$refText": "VariableName"
               },
               "arguments": []
             }
@@ -2598,7 +2598,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "VariableNameRule"
+                    "$refText": "VariableName"
                   },
                   "arguments": []
                 }
@@ -2633,7 +2633,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "VariableNameRule",
+      "name": "VariableName",
       "inferredType": {
         "$type": "InferredType",
         "name": "VariableName"
@@ -2659,7 +2659,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "PortTypingRule",
+      "name": "PortTyping",
       "inferredType": {
         "$type": "InferredType",
         "name": "PortTyping"
@@ -2706,7 +2706,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "ComponentTypingRule",
+      "name": "ComponentTyping",
       "inferredType": {
         "$type": "InferredType",
         "name": "ComponentTyping"
@@ -2721,7 +2721,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "ComponentNameRule"
+                "$refText": "ComponentName"
               },
               "arguments": []
             }
@@ -2740,7 +2740,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "ComponentNameRule"
+                    "$refText": "ComponentName"
                   },
                   "arguments": []
                 }
@@ -2775,7 +2775,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "ComponentNameRule",
+      "name": "ComponentName",
       "inferredType": {
         "$type": "InferredType",
         "name": "ComponentName"
@@ -3131,7 +3131,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$refText": "StructTypeRule"
+                  "$refText": "StructType"
                 },
                 "arguments": []
               },
@@ -3728,7 +3728,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
               },
               {
                 "$type": "Assignment",
-                "feature": "oeprator",
+                "feature": "operator",
                 "operator": "=",
                 "terminal": {
                   "$type": "Alternatives",
@@ -4119,7 +4119,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
       "name": "FunctionCallExpression",
       "inferredType": {
         "$type": "InferredType",
-        "name": "FunctionCallExpression"
+        "name": "Expression"
       },
       "definition": {
         "$type": "Group",
@@ -4728,7 +4728,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$refText": "StructTypeRule"
+                  "$refText": "StructType"
                 },
                 "arguments": []
               },
@@ -4862,7 +4862,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$refText": "EnumMemberRule"
+                "$refText": "EnumMember"
               },
               "arguments": []
             }
@@ -4881,7 +4881,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$refText": "EnumMemberRule"
+                    "$refText": "EnumMember"
                   },
                   "arguments": []
                 }
@@ -4904,7 +4904,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "EnumMemberRule",
+      "name": "EnumMember",
       "inferredType": {
         "$type": "InferredType",
         "name": "EnumMember"
@@ -4930,7 +4930,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
     },
     {
       "$type": "ParserRule",
-      "name": "StructTypeRule",
+      "name": "StructType",
       "inferredType": {
         "$type": "InferredType",
         "name": "StructType"
