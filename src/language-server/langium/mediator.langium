@@ -46,7 +46,7 @@ FunctionDefinition infers FunctionDef:
     '}';
 
 // Named Identifiers
-type NamedElement = VariableName | ConstDef | EnumMember | StructField | PortTyping | LoopVariableDeclaration | TemplateTyping | FunctionDef;
+type NamedElement = VariableName | ConstDef | EnumMember | StructField | PortTyping | TemplateTyping | FunctionDef;
 
 type NamedAutomaton = ComponentName | Automaton;
 
@@ -88,7 +88,7 @@ GroupTransition infers GroupTransition:
 
 // Statement
 Statement infers Statement:
-    ';' | AssignmentStatement | ConditionalStatement | LoopStatement;
+    ';' | AssignmentStatement | ConditionalStatement;
 
 AssignmentStatement infers AssignmentStatement:
     left=Expression assign=('=' | '+=' | '-=' | '*=' | '/=' | '%=') right=Expression ';';
@@ -98,24 +98,13 @@ ConditionalStatement infers ConditionalStatement:
     (then+=Statement | '{' (then+=Statement)* '}')
     ('else' (else+=Statement | '{' (else+=Statement)* '}'))?;
 
-LoopStatement infers LoopStatement:
-    'for'
-    '(' declaration=LoopVariableDeclaration ';' condition=Expression ';' update=LoopVariableUpdate ')'
-    (body+=Statement | '{' (body+=Statement)* '}');
-
-LoopVariableDeclaration infers LoopVariableDeclaration:
-    'let' name=FeatureID ':' type=Type '=' value=Expression;
-
-LoopVariableUpdate infers LoopVariableUpdate:
-    var=[LoopVariableDeclaration:FeatureID] assign=('=' | '+=' | '-=' | '*=' | '/=' | '%=') expr=Expression;
-
 // Synchronization
 Synchronization infers Synchronization:
     'sync' ports+=[PortTyping:FeatureID] (',' ports+=[PortTyping:FeatureID])* ';';
 
 // Function Statement
 FunctionStatement infers FunctionStatement:
-    ';' | AssignmentStatement | ReturnStatement | FunctionConditionalStatement | FunctionLoopStatement;
+    ';' | AssignmentStatement | ReturnStatement | FunctionConditionalStatement;
 
 ReturnStatement infers ReturnStatement:
     'return' value=Expression;
@@ -124,11 +113,6 @@ FunctionConditionalStatement infers FunctionConditionalStatement:
     'if' '(' condition=Expression ')'
     (then+=FunctionStatement | '{' (then+=FunctionStatement)* '}')
     ('else' (else+=FunctionStatement | '{' (else+=FunctionStatement)* '}'))?;
-
-FunctionLoopStatement infers FunctionLoopStatement:
-    'for'
-    '(' declaration=LoopVariableDeclaration ';' condition=Expression ';' update=LoopVariableUpdate ')'
-    (body+=FunctionStatement | '{' (body+=FunctionStatement)* '}');
 
 // Variable Typing
 VariableTyping infers VariableTyping:

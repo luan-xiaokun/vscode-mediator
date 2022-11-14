@@ -27,7 +27,7 @@ export function isExpression(item: unknown): item is Expression {
 
 export type FeatureID = string;
 
-export type FunctionStatement = AssignmentStatement | FunctionConditionalStatement | FunctionLoopStatement | ReturnStatement;
+export type FunctionStatement = AssignmentStatement | FunctionConditionalStatement | ReturnStatement;
 
 export const FunctionStatement = 'FunctionStatement';
 
@@ -43,7 +43,7 @@ export function isNamedAutomaton(item: unknown): item is NamedAutomaton {
     return reflection.isInstance(item, NamedAutomaton);
 }
 
-export type NamedElement = ConstDef | EnumMember | FunctionDef | LoopVariableDeclaration | PortTyping | StructField | TemplateTyping | VariableName;
+export type NamedElement = ConstDef | EnumMember | FunctionDef | PortTyping | StructField | TemplateTyping | VariableName;
 
 export const NamedElement = 'NamedElement';
 
@@ -77,7 +77,7 @@ export function isParameterType(item: unknown): item is ParameterType {
     return reflection.isInstance(item, ParameterType);
 }
 
-export type Statement = AssignmentStatement | ConditionalStatement | LoopStatement;
+export type Statement = AssignmentStatement | ConditionalStatement;
 
 export const Statement = 'Statement';
 
@@ -121,7 +121,7 @@ export function isAbstractType(item: unknown): item is AbstractType {
 }
 
 export interface AliasType extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     alias: Reference<NamedType>
 }
 
@@ -132,7 +132,7 @@ export function isAliasType(item: unknown): item is AliasType {
 }
 
 export interface AssignmentStatement extends AstNode {
-    readonly $container: Automaton | ConditionalStatement | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | LoopStatement | SingleTransition;
+    readonly $container: Automaton | ConditionalStatement | FunctionConditionalStatement | FunctionDef | SingleTransition;
     assign: '%=' | '*=' | '+=' | '-=' | '/=' | '='
     left: Expression
     right: Expression
@@ -145,7 +145,7 @@ export function isAssignmentStatement(item: unknown): item is AssignmentStatemen
 }
 
 export interface AttributeExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     field?: Reference<StructField>
     portField?: 'reqRead' | 'reqWrite' | 'value'
     previous: Expression
@@ -187,7 +187,7 @@ export function isAutomatonPort(item: unknown): item is AutomatonPort {
 }
 
 export interface BinaryExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     left: Expression
     operator: '!=' | '%' | '&&' | '*' | '**' | '+' | '-' | '/' | '<' | '<=' | '==' | '>' | '>=' | '||'
     right: Expression
@@ -200,7 +200,7 @@ export function isBinaryExpression(item: unknown): item is BinaryExpression {
 }
 
 export interface BoolLiteral extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     value: BOOL
 }
 
@@ -211,7 +211,7 @@ export function isBoolLiteral(item: unknown): item is BoolLiteral {
 }
 
 export interface CharLiteral extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     value: string
 }
 
@@ -257,7 +257,7 @@ export function isComponentTyping(item: unknown): item is ComponentTyping {
 }
 
 export interface ConditionalExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     condition: Expression
     else: Expression
     then: Expression
@@ -270,7 +270,7 @@ export function isConditionalExpression(item: unknown): item is ConditionalExpre
 }
 
 export interface ConditionalStatement extends AstNode {
-    readonly $container: Automaton | ConditionalStatement | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | LoopStatement | SingleTransition;
+    readonly $container: Automaton | ConditionalStatement | FunctionConditionalStatement | FunctionDef | SingleTransition;
     condition: Expression
     else: Array<Statement>
     then: Array<Statement>
@@ -306,7 +306,7 @@ export function isEnumMember(item: unknown): item is EnumMember {
 }
 
 export interface EnumType extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     members: Array<EnumMember>
 }
 
@@ -317,7 +317,7 @@ export function isEnumType(item: unknown): item is EnumType {
 }
 
 export interface FunctionCallExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     arguments: Array<Expression>
     name: NamedExpression
     templates: Array<TypeOrExpression>
@@ -330,7 +330,7 @@ export function isFunctionCallExpression(item: unknown): item is FunctionCallExp
 }
 
 export interface FunctionConditionalStatement extends AstNode {
-    readonly $container: Automaton | ConditionalStatement | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | LoopStatement | SingleTransition;
+    readonly $container: Automaton | ConditionalStatement | FunctionConditionalStatement | FunctionDef | SingleTransition;
     condition: Expression
     else: Array<FunctionStatement>
     then: Array<FunctionStatement>
@@ -358,20 +358,6 @@ export function isFunctionDef(item: unknown): item is FunctionDef {
     return reflection.isInstance(item, FunctionDef);
 }
 
-export interface FunctionLoopStatement extends AstNode {
-    readonly $container: Automaton | ConditionalStatement | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | LoopStatement | SingleTransition;
-    body: Array<FunctionStatement>
-    condition: Expression
-    declaration: LoopVariableDeclaration
-    update: LoopVariableUpdate
-}
-
-export const FunctionLoopStatement = 'FunctionLoopStatement';
-
-export function isFunctionLoopStatement(item: unknown): item is FunctionLoopStatement {
-    return reflection.isInstance(item, FunctionLoopStatement);
-}
-
 export interface FunctionType extends AstNode {
     readonly $container: TemplateTyping;
     argtypes: Array<Type>
@@ -396,7 +382,7 @@ export function isGroupTransition(item: unknown): item is GroupTransition {
 }
 
 export interface IndexingExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     base: Expression
     index: Expression
 }
@@ -442,7 +428,7 @@ export function isInternalPort(item: unknown): item is InternalPort {
 }
 
 export interface IntLiteral extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     value: number
 }
 
@@ -453,7 +439,7 @@ export function isIntLiteral(item: unknown): item is IntLiteral {
 }
 
 export interface ListExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     values: Array<Expression>
 }
 
@@ -464,7 +450,7 @@ export function isListExpression(item: unknown): item is ListExpression {
 }
 
 export interface ListType extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     base: AliasType | EnumType | PrimitiveType | StructType | Type
     capacity?: Expression
 }
@@ -476,7 +462,7 @@ export function isListType(item: unknown): item is ListType {
 }
 
 export interface ListTypeOrExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     base: EnumType | Expression | PrimitiveType | StructType
     capacity?: Expression
 }
@@ -485,46 +471,6 @@ export const ListTypeOrExpression = 'ListTypeOrExpression';
 
 export function isListTypeOrExpression(item: unknown): item is ListTypeOrExpression {
     return reflection.isInstance(item, ListTypeOrExpression);
-}
-
-export interface LoopStatement extends AstNode {
-    readonly $container: Automaton | ConditionalStatement | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | LoopStatement | SingleTransition;
-    body: Array<Statement>
-    condition: Expression
-    declaration: LoopVariableDeclaration
-    update: LoopVariableUpdate
-}
-
-export const LoopStatement = 'LoopStatement';
-
-export function isLoopStatement(item: unknown): item is LoopStatement {
-    return reflection.isInstance(item, LoopStatement);
-}
-
-export interface LoopVariableDeclaration extends AstNode {
-    readonly $container: FunctionLoopStatement | LoopStatement;
-    name: FeatureID
-    type: Type
-    value: Expression
-}
-
-export const LoopVariableDeclaration = 'LoopVariableDeclaration';
-
-export function isLoopVariableDeclaration(item: unknown): item is LoopVariableDeclaration {
-    return reflection.isInstance(item, LoopVariableDeclaration);
-}
-
-export interface LoopVariableUpdate extends AstNode {
-    readonly $container: FunctionLoopStatement | LoopStatement;
-    assign: '%=' | '*=' | '+=' | '-=' | '/=' | '='
-    expr: Expression
-    var: Reference<LoopVariableDeclaration>
-}
-
-export const LoopVariableUpdate = 'LoopVariableUpdate';
-
-export function isLoopVariableUpdate(item: unknown): item is LoopVariableUpdate {
-    return reflection.isInstance(item, LoopVariableUpdate);
 }
 
 export interface MultipleVariableTyping extends AstNode {
@@ -540,7 +486,7 @@ export function isMultipleVariableTyping(item: unknown): item is MultipleVariabl
 }
 
 export interface NamedExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     element: Reference<NamedElement>
 }
 
@@ -551,7 +497,7 @@ export function isNamedExpression(item: unknown): item is NamedExpression {
 }
 
 export interface NullLiteral extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     value: NULL
 }
 
@@ -612,7 +558,7 @@ export function isPortTyping(item: unknown): item is PortTyping {
 }
 
 export interface PrefixExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     operand: Expression
     operator: '!' | '+' | '-'
 }
@@ -624,7 +570,7 @@ export function isPrefixExpression(item: unknown): item is PrefixExpression {
 }
 
 export interface PrimitiveType extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     name: 'Null' | 'bool' | 'char' | 'int' | 'real'
 }
 
@@ -649,7 +595,7 @@ export function isProgram(item: unknown): item is Program {
 }
 
 export interface RealLiteral extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     value: number
 }
 
@@ -660,7 +606,7 @@ export function isRealLiteral(item: unknown): item is RealLiteral {
 }
 
 export interface ReturnStatement extends AstNode {
-    readonly $container: Automaton | ConditionalStatement | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | LoopStatement | SingleTransition;
+    readonly $container: Automaton | ConditionalStatement | FunctionConditionalStatement | FunctionDef | SingleTransition;
     value: Expression
 }
 
@@ -683,7 +629,7 @@ export function isSingleTransition(item: unknown): item is SingleTransition {
 }
 
 export interface StructExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     fields: Array<FeatureID>
     values: Array<Expression>
 }
@@ -706,7 +652,7 @@ export function isStructField(item: unknown): item is StructField {
 }
 
 export interface StructType extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     fields: Array<StructField>
     types: Array<Type>
 }
@@ -757,7 +703,7 @@ export function isTemplateTyping(item: unknown): item is TemplateTyping {
 }
 
 export interface TupleExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     values: Array<Expression>
 }
 
@@ -768,7 +714,7 @@ export function isTupleExpression(item: unknown): item is TupleExpression {
 }
 
 export interface TupleType extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     types: Array<Type>
 }
 
@@ -791,7 +737,7 @@ export function isTypeDef(item: unknown): item is TypeDef {
 }
 
 export interface UnionType extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     subtypes: Array<Type>
 }
 
@@ -802,7 +748,7 @@ export function isUnionType(item: unknown): item is UnionType {
 }
 
 export interface UnionTypeOrExpression extends AstNode {
-    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionLoopStatement | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | LoopStatement | LoopVariableDeclaration | LoopVariableUpdate | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
+    readonly $container: AssignmentStatement | AttributeExpression | Automaton | BinaryExpression | ComponentInstantiation | ConditionalExpression | ConditionalStatement | ConstDef | FunctionCallExpression | FunctionConditionalStatement | FunctionDef | FunctionType | IndexingExpression | ListExpression | ListType | ListTypeOrExpression | MultipleVariableTyping | PortConnectionOption | PortType | PrefixExpression | ReturnStatement | SingleTransition | StructExpression | StructType | TemplateTyping | TupleExpression | TupleType | TypeDef | UnionType | UnionTypeOrExpression | VariableTyping;
     types: Array<EnumType | Expression | ListTypeOrExpression | PrimitiveType | StructType> | Array<TypeOrExpression>
 }
 
@@ -858,7 +804,6 @@ export interface MediatorAstType {
     FunctionCallExpression: FunctionCallExpression
     FunctionConditionalStatement: FunctionConditionalStatement
     FunctionDef: FunctionDef
-    FunctionLoopStatement: FunctionLoopStatement
     FunctionStatement: FunctionStatement
     FunctionType: FunctionType
     GroupTransition: GroupTransition
@@ -870,9 +815,6 @@ export interface MediatorAstType {
     ListExpression: ListExpression
     ListType: ListType
     ListTypeOrExpression: ListTypeOrExpression
-    LoopStatement: LoopStatement
-    LoopVariableDeclaration: LoopVariableDeclaration
-    LoopVariableUpdate: LoopVariableUpdate
     MultipleVariableTyping: MultipleVariableTyping
     NamedAutomaton: NamedAutomaton
     NamedElement: NamedElement
@@ -913,7 +855,7 @@ export interface MediatorAstType {
 export class MediatorAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['AbstractType', 'AliasType', 'AssignmentStatement', 'AttributeExpression', 'Automaton', 'AutomatonPort', 'BinaryExpression', 'BoolLiteral', 'CharLiteral', 'ComponentInstantiation', 'ComponentName', 'ComponentTyping', 'ConditionalExpression', 'ConditionalStatement', 'Connection', 'ConstDef', 'EnumMember', 'EnumType', 'Expression', 'FunctionCallExpression', 'FunctionConditionalStatement', 'FunctionDef', 'FunctionLoopStatement', 'FunctionStatement', 'FunctionType', 'GroupTransition', 'IndexingExpression', 'InstantiationConnection', 'IntLiteral', 'InterfaceType', 'InternalPort', 'ListExpression', 'ListType', 'ListTypeOrExpression', 'LoopStatement', 'LoopVariableDeclaration', 'LoopVariableUpdate', 'MultipleVariableTyping', 'NamedAutomaton', 'NamedElement', 'NamedExpression', 'NamedType', 'NonInterfaceParameterType', 'NullLiteral', 'ParameterType', 'PortConnection', 'PortConnectionOption', 'PortType', 'PortTyping', 'PrefixExpression', 'PrimitiveType', 'Program', 'RealLiteral', 'ReturnStatement', 'SingleTransition', 'Statement', 'StructExpression', 'StructField', 'StructType', 'Synchronization', 'System', 'TemplateTyping', 'Transition', 'TupleExpression', 'TupleType', 'Type', 'TypeDef', 'TypeOrExpression', 'UnionType', 'UnionTypeOrExpression', 'VariableName', 'VariableTyping'];
+        return ['AbstractType', 'AliasType', 'AssignmentStatement', 'AttributeExpression', 'Automaton', 'AutomatonPort', 'BinaryExpression', 'BoolLiteral', 'CharLiteral', 'ComponentInstantiation', 'ComponentName', 'ComponentTyping', 'ConditionalExpression', 'ConditionalStatement', 'Connection', 'ConstDef', 'EnumMember', 'EnumType', 'Expression', 'FunctionCallExpression', 'FunctionConditionalStatement', 'FunctionDef', 'FunctionStatement', 'FunctionType', 'GroupTransition', 'IndexingExpression', 'InstantiationConnection', 'IntLiteral', 'InterfaceType', 'InternalPort', 'ListExpression', 'ListType', 'ListTypeOrExpression', 'MultipleVariableTyping', 'NamedAutomaton', 'NamedElement', 'NamedExpression', 'NamedType', 'NonInterfaceParameterType', 'NullLiteral', 'ParameterType', 'PortConnection', 'PortConnectionOption', 'PortType', 'PortTyping', 'PrefixExpression', 'PrimitiveType', 'Program', 'RealLiteral', 'ReturnStatement', 'SingleTransition', 'Statement', 'StructExpression', 'StructField', 'StructType', 'Synchronization', 'System', 'TemplateTyping', 'Transition', 'TupleExpression', 'TupleType', 'Type', 'TypeDef', 'TypeOrExpression', 'UnionType', 'UnionTypeOrExpression', 'VariableName', 'VariableTyping'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -959,14 +901,12 @@ export class MediatorAstReflection implements AstReflection {
             case ComponentName: {
                 return this.isSubtype(NamedAutomaton, supertype);
             }
-            case ConditionalStatement:
-            case LoopStatement: {
+            case ConditionalStatement: {
                 return this.isSubtype(Statement, supertype);
             }
             case ConstDef:
             case EnumMember:
             case FunctionDef:
-            case LoopVariableDeclaration:
             case PortTyping:
             case StructField:
             case VariableName: {
@@ -978,7 +918,6 @@ export class MediatorAstReflection implements AstReflection {
                 return this.isSubtype(TypeOrExpression, supertype) || this.isSubtype(Type, supertype);
             }
             case FunctionConditionalStatement:
-            case FunctionLoopStatement:
             case ReturnStatement: {
                 return this.isSubtype(FunctionStatement, supertype);
             }
@@ -1030,9 +969,6 @@ export class MediatorAstReflection implements AstReflection {
             }
             case 'ComponentInstantiation:component': {
                 return NamedAutomaton;
-            }
-            case 'LoopVariableUpdate:var': {
-                return LoopVariableDeclaration;
             }
             case 'NamedExpression:element': {
                 return NamedElement;
@@ -1123,14 +1059,6 @@ export class MediatorAstReflection implements AstReflection {
                     ]
                 };
             }
-            case 'FunctionLoopStatement': {
-                return {
-                    name: 'FunctionLoopStatement',
-                    mandatory: [
-                        { name: 'body', type: 'array' }
-                    ]
-                };
-            }
             case 'FunctionType': {
                 return {
                     name: 'FunctionType',
@@ -1168,14 +1096,6 @@ export class MediatorAstReflection implements AstReflection {
                     name: 'ListExpression',
                     mandatory: [
                         { name: 'values', type: 'array' }
-                    ]
-                };
-            }
-            case 'LoopStatement': {
-                return {
-                    name: 'LoopStatement',
-                    mandatory: [
-                        { name: 'body', type: 'array' }
                     ]
                 };
             }

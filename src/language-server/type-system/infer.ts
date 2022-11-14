@@ -1,5 +1,5 @@
 import { AstNode } from "langium";
-import { Expression, IntLiteral, isAbstractType, isAliasType, isAttributeExpression, isAutomaton, isBinaryExpression, isBoolLiteral, isCharLiteral, isComponentInstantiation, isConditionalExpression, isConstDef, isEnumMember, isEnumType, isExpression, isFunctionCallExpression, isFunctionDef, isFunctionType, isIndexingExpression, isIntLiteral, isListExpression, isListType, isLoopVariableDeclaration, isNamedExpression, isNullLiteral, isParameterType, isPortType, isPortTyping, isPrefixExpression, isPrimitiveType, isRealLiteral, isStructExpression, isStructField, isStructType, isTemplateTyping, isTupleExpression, isTupleType, isType, isTypeDef, isUnionType, isVariableName, Type } from "../generated/ast";
+import { Expression, IntLiteral, isAbstractType, isAliasType, isAttributeExpression, isAutomaton, isBinaryExpression, isBoolLiteral, isCharLiteral, isComponentInstantiation, isConditionalExpression, isConstDef, isEnumMember, isEnumType, isExpression, isFunctionCallExpression, isFunctionDef, isFunctionType, isIndexingExpression, isIntLiteral, isListExpression, isListType, isNamedExpression, isNullLiteral, isParameterType, isPortType, isPortTyping, isPrefixExpression, isPrimitiveType, isRealLiteral, isStructExpression, isStructField, isStructType, isTemplateTyping, isTupleExpression, isTupleType, isType, isTypeDef, isUnionType, isVariableName, Type } from "../generated/ast";
 import { createAbstractType, createAnyType, createBoolType, createCharType, createEnumType, createErrorType, createFunctionType, createInterfaceType, createIntType, createListType, createNullType, createPortType, createRealType, createStructType, createTupleType, createUnionType, TypeDescription } from "./description";
 import { isSubtypeOf } from "./subtype";
 
@@ -101,8 +101,6 @@ export function inferExpression(node: Expression, cache: Map<AstNode, TypeDescri
                     inferTypeRef(ref.returntype, cache),
                     ref.arguments.map(value => inferTypeRef(value.type, cache))
                 );
-            } else if (isLoopVariableDeclaration(ref)) {
-                type = inferTypeRef(ref.type, cache);
             } else if (isPortTyping(ref)) {
                 type = createPortType(ref.type.direction, inferTypeRef(ref.type.type, cache));
             } else if (isStructField(ref)) {

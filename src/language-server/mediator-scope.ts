@@ -1,6 +1,6 @@
 import { AstNode, AstNodeDescription, DefaultScopeComputation, DefaultScopeProvider, interruptAndCheck, LangiumDocument, LangiumServices, MultiMap, PrecomputedScopes, ReferenceInfo, Scope, streamAllContents } from "langium";
 import { CancellationToken } from "vscode-jsonrpc";
-import { isEnumType, isTypeDef, Type, isComponentName, ComponentTyping, isVariableName, VariableTyping, MultipleVariableTyping, isEnumMember, isFunctionDef, isAutomaton, isSystem, isLoopStatement, isFunctionLoopStatement, isTupleType, isUnionType } from "./generated/ast";
+import { isEnumType, isTypeDef, Type, isComponentName, ComponentTyping, isVariableName, VariableTyping, MultipleVariableTyping, isEnumMember, isFunctionDef, isAutomaton, isSystem, isTupleType, isUnionType } from "./generated/ast";
 
 export class MediatorScopeComputation extends DefaultScopeComputation {
     constructor(services: LangiumServices) {
@@ -32,7 +32,7 @@ export class MediatorScopeComputation extends DefaultScopeComputation {
                 else if (isEnumMember(node)) {
                     let parent = container;
                     const isCorrectScope = (n: unknown) => {
-                        return isTypeDef(n) || isFunctionDef(n) || isAutomaton(n) || isSystem(n) || isLoopStatement(n) || isFunctionLoopStatement(n)
+                        return isTypeDef(n) || isFunctionDef(n) || isAutomaton(n) || isSystem(n)
                     };
                     while (parent.$container && !isCorrectScope(parent.$container)) {
                         parent = parent.$container;
