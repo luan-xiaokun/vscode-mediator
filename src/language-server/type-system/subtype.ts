@@ -1,20 +1,21 @@
 import { isIntLiteral } from "../generated/ast";
-import { isAbstractType, isAutomatonType, isBoolType, isCharType, isEnumType, isFunctionType, isIntType, isListType, isNullType, isPortType, isRealType, isStructType, isTupleType, isUnionType, TypeDescription } from "./descriptions";
+import { isAbstractType, isInterfaceType, isBoolType, isCharType, isEnumType, isFunctionType, isIntType, isListType, isNullType, isPortType, isRealType, isStructType, isTupleType, isUnionType, TypeDescription } from "./description";
 
 export function isSubtypeOf(from: TypeDescription, to: TypeDescription): boolean {
     // structural recursion on `to`
     if (isNullType(to)) {
         return from.$type === "null";
+    } else if (isBoolType(to)) {
+        return from.$type === "bool";
     } else if (isCharType(to)) {
         return from.$type === "char";
     } else if (isIntType(to)) {
-        return from.$type === "int" || from.$type === "bool";
-    } else if (isBoolType(to) || isRealType(to)) {
+        return from.$type === "int" || from.$type === "char" || from.$type === "bool";
+    } else if (isRealType(to)) {
         return ["int", "real", "char", "bool"].includes(from.$type);
-    }
-    if (isEnumType(to)) {
+    } else if (isEnumType(to)) {
         // for enum type, members of `from` must be contained in `to`
-        return from.$type === "enum" && from.members.length <= to.members.length
+        return from.$type === "enum" && from.members.length === to.members.length
             && arrayContainedIn(from.members, to.members);
     } else if (isStructType(to)) {
         // for struct type, fields of `to` must be contained in `from`, whose types are supertype of those of `from`
@@ -32,9 +33,7 @@ export function isSubtypeOf(from: TypeDescription, to: TypeDescription): boolean
                 return !from.capacity && isSubtypeOf(from.base, to.base);
             } else {
                 // otherwise, `from` should have larger capacity with proper base type
-                if (!from.capacity) {
-                    return isSubtypeOf(from.base, to.base);
-                }
+                if (!from.capacity) return false;
                 // TODO: finer capacity check
                 if (isIntLiteral(from.capacity) && isIntLiteral(to.capacity)) {
                     return from.capacity.value >= to.capacity.value
@@ -65,19 +64,14 @@ export function isSubtypeOf(from: TypeDescription, to: TypeDescription): boolean
     } else if (isFunctionType(to)) {
         // for function type, `from` should have matching parameters with same length and proper types
         // return type of `from` should also be subtype of that of `to`
-        return from.$type === "function" && from.paramsType.length === to.paramsType.length
+        return from.$type === "func" && from.argumentTypes.length === to.argumentTypes.length
             && isSubtypeOf(from.returnType, to.returnType)
-            && from.paramsType.every((value, index) => { return isSubtypeOf(value, to.paramsType[index]) });
-    } else if (isAutomatonType(to)) {
+            && from.argumentTypes.every((value, index) => { return isSubtypeOf(to.argumentTypes[index], value) });
+    } else if (isInterfaceType(to)) {
         // for automaton type, the ports of `from` should be subtype of those of `to`
-        // they should have same number of ports, but this does not seem to be called ever
-        if (from.$type === "automaton" && from.ports.length === to.ports.length) {
-            // this is more difficult than I expected :(
-            // it seems like a maximum matching problem :)
-            // TODO: implement this
-            return true;
-        }
-        return false;
+        return (from.$type === "interface"
+            && from.portTypes.length === to.portTypes.length
+            && from.portTypes.every((value, index) => { return isSubtypeOf(value, to.portTypes[index]) }));
     }
     // leaving error type
     return from.$type === to.$type;

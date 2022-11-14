@@ -2,7 +2,8 @@ import { AstNode } from "langium";
 import { BoolLiteral, CharLiteral, EnumMember, Expression, IntLiteral, RealLiteral } from "../generated/ast";
 
 export type TypeDescription =
-    NullTypeDescription
+    AnyTypeDescription
+    | NullTypeDescription
     | IntTypeDescription
     | RealTypeDescription
     | CharTypeDescription
@@ -16,9 +17,22 @@ export type TypeDescription =
     | FunctionTypeDescription
     | InterfaceTypeDescription
     | PortTypeDescription
-    | LoopVariableTypeDescription
     | ErrorTypeDescription
     ;
+
+export interface AnyTypeDescription {
+    readonly $type: "any";
+}
+
+export function createAnyType(): AnyTypeDescription {
+    return {
+        $type: "any"
+    };
+}
+
+export function isAnyType(item: TypeDescription): item is AnyTypeDescription {
+    return item.$type === "any";
+}
 
 export interface NullTypeDescription {
     readonly $type: "null";
@@ -152,13 +166,15 @@ export interface ListTypeDescription {
     readonly $type: "list";
     readonly base: TypeDescription;
     readonly capacity?: Expression;
+    empty?: boolean;
 }
 
-export function createListType(base: TypeDescription, capacity?: Expression): ListTypeDescription {
+export function createListType(base: TypeDescription, capacity?: Expression, empty?: boolean): ListTypeDescription {
     return {
         $type: "list",
         base,
-        capacity
+        capacity,
+        empty
     };
 }
 
@@ -236,10 +252,10 @@ export function isPortType(item: TypeDescription): item is PortTypeDescription {
 
 export interface InterfaceTypeDescription {
     readonly $type: "interface";
-    readonly portTypes: PortTypeDescription[];
+    readonly portTypes: TypeDescription[];
 }
 
-export function createInterfaceType(portTypes: PortTypeDescription[]): InterfaceTypeDescription {
+export function createInterfaceType(portTypes: TypeDescription[]): InterfaceTypeDescription {
     return {
         $type: "interface",
         portTypes
@@ -248,22 +264,6 @@ export function createInterfaceType(portTypes: PortTypeDescription[]): Interface
 
 export function isInterfaceType(item: TypeDescription): item is InterfaceTypeDescription {
     return item.$type === "interface";
-}
-
-export interface LoopVariableTypeDescription {
-    readonly $type: "loop-var";
-    readonly type: TypeDescription;
-}
-
-export function createLoopVariableType(type: TypeDescription): LoopVariableTypeDescription {
-    return {
-        $type: "loop-var",
-        type
-    };
-}
-
-export function isLoopVariableType(item: TypeDescription): item is LoopVariableTypeDescription {
-    return item.$type === "loop-var";
 }
 
 export interface ErrorTypeDescription {
@@ -325,12 +325,12 @@ export function typeToString(item: TypeDescription): string {
         const params = item.argumentTypes.map(e => `${typeToString(e)}`).join(", ");
         return `func (${params}): ${typeToString(item.returnType)}`;
     } else if (item.$type === "interface") {
-        const ports = item.portTypes.map(e => e.direction + ` ${typeToString(e.valueType)}`).join(", ");
+        const ports = item.portTypes.map(e => typeToString(e)).join(", ");
         return `interface (${ports})`;
     } else if (item.$type === "port") {
         return item.direction + ` ${typeToString(item.valueType)}`;
-    } else if (item.$type === "loop-var") {
-        return `loop-var ${typeToString(item.type)}`;
+    } else if (item.$type === "any") {
+        return "any";
     } else {
         const suffix = item.source ? ` from ${item.source}` : "";
         return `error: '${item.message}'` + suffix;
