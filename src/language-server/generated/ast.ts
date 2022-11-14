@@ -59,7 +59,7 @@ export function isNamedType(item: unknown): item is NamedType {
     return reflection.isInstance(item, NamedType);
 }
 
-export type NonInterfaceParameterType = FunctionType;
+export type NonInterfaceParameterType = AbstractType | FunctionType;
 
 export const NonInterfaceParameterType = 'NonInterfaceParameterType';
 
@@ -69,7 +69,7 @@ export function isNonInterfaceParameterType(item: unknown): item is NonInterface
 
 export type NULL = string;
 
-export type ParameterType = FunctionType | InterfaceType;
+export type ParameterType = AbstractType | FunctionType | InterfaceType;
 
 export const ParameterType = 'ParameterType';
 
@@ -107,6 +107,17 @@ export const TypeOrExpression = 'TypeOrExpression';
 
 export function isTypeOrExpression(item: unknown): item is TypeOrExpression {
     return reflection.isInstance(item, TypeOrExpression);
+}
+
+export interface AbstractType extends AstNode {
+    readonly $container: TemplateTyping;
+    abstract: 'type'
+}
+
+export const AbstractType = 'AbstractType';
+
+export function isAbstractType(item: unknown): item is AbstractType {
+    return reflection.isInstance(item, AbstractType);
 }
 
 export interface AliasType extends AstNode {
@@ -825,6 +836,7 @@ export function isVariableTyping(item: unknown): item is VariableTyping {
 }
 
 export interface MediatorAstType {
+    AbstractType: AbstractType
     AliasType: AliasType
     AssignmentStatement: AssignmentStatement
     AttributeExpression: AttributeExpression
@@ -901,7 +913,7 @@ export interface MediatorAstType {
 export class MediatorAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['AliasType', 'AssignmentStatement', 'AttributeExpression', 'Automaton', 'AutomatonPort', 'BinaryExpression', 'BoolLiteral', 'CharLiteral', 'ComponentInstantiation', 'ComponentName', 'ComponentTyping', 'ConditionalExpression', 'ConditionalStatement', 'Connection', 'ConstDef', 'EnumMember', 'EnumType', 'Expression', 'FunctionCallExpression', 'FunctionConditionalStatement', 'FunctionDef', 'FunctionLoopStatement', 'FunctionStatement', 'FunctionType', 'GroupTransition', 'IndexingExpression', 'InstantiationConnection', 'IntLiteral', 'InterfaceType', 'InternalPort', 'ListExpression', 'ListType', 'ListTypeOrExpression', 'LoopStatement', 'LoopVariableDeclaration', 'LoopVariableUpdate', 'MultipleVariableTyping', 'NamedAutomaton', 'NamedElement', 'NamedExpression', 'NamedType', 'NonInterfaceParameterType', 'NullLiteral', 'ParameterType', 'PortConnection', 'PortConnectionOption', 'PortType', 'PortTyping', 'PrefixExpression', 'PrimitiveType', 'Program', 'RealLiteral', 'ReturnStatement', 'SingleTransition', 'Statement', 'StructExpression', 'StructField', 'StructType', 'Synchronization', 'System', 'TemplateTyping', 'Transition', 'TupleExpression', 'TupleType', 'Type', 'TypeDef', 'TypeOrExpression', 'UnionType', 'UnionTypeOrExpression', 'VariableName', 'VariableTyping'];
+        return ['AbstractType', 'AliasType', 'AssignmentStatement', 'AttributeExpression', 'Automaton', 'AutomatonPort', 'BinaryExpression', 'BoolLiteral', 'CharLiteral', 'ComponentInstantiation', 'ComponentName', 'ComponentTyping', 'ConditionalExpression', 'ConditionalStatement', 'Connection', 'ConstDef', 'EnumMember', 'EnumType', 'Expression', 'FunctionCallExpression', 'FunctionConditionalStatement', 'FunctionDef', 'FunctionLoopStatement', 'FunctionStatement', 'FunctionType', 'GroupTransition', 'IndexingExpression', 'InstantiationConnection', 'IntLiteral', 'InterfaceType', 'InternalPort', 'ListExpression', 'ListType', 'ListTypeOrExpression', 'LoopStatement', 'LoopVariableDeclaration', 'LoopVariableUpdate', 'MultipleVariableTyping', 'NamedAutomaton', 'NamedElement', 'NamedExpression', 'NamedType', 'NonInterfaceParameterType', 'NullLiteral', 'ParameterType', 'PortConnection', 'PortConnectionOption', 'PortType', 'PortTyping', 'PrefixExpression', 'PrimitiveType', 'Program', 'RealLiteral', 'ReturnStatement', 'SingleTransition', 'Statement', 'StructExpression', 'StructField', 'StructType', 'Synchronization', 'System', 'TemplateTyping', 'Transition', 'TupleExpression', 'TupleType', 'Type', 'TypeDef', 'TypeOrExpression', 'UnionType', 'UnionTypeOrExpression', 'VariableName', 'VariableTyping'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -913,6 +925,10 @@ export class MediatorAstReflection implements AstReflection {
             return true;
         }
         switch (subtype) {
+            case AbstractType:
+            case FunctionType: {
+                return this.isSubtype(ParameterType, supertype) || this.isSubtype(NonInterfaceParameterType, supertype);
+            }
             case AliasType:
             case ListType:
             case TupleType:
@@ -965,9 +981,6 @@ export class MediatorAstReflection implements AstReflection {
             case FunctionLoopStatement:
             case ReturnStatement: {
                 return this.isSubtype(FunctionStatement, supertype);
-            }
-            case FunctionType: {
-                return this.isSubtype(ParameterType, supertype) || this.isSubtype(NonInterfaceParameterType, supertype);
             }
             case GroupTransition:
             case SingleTransition: {

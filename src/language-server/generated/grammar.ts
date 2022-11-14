@@ -5209,8 +5209,11 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
         "$type": "Alternatives",
         "elements": [
           {
-            "$type": "Keyword",
-            "value": "type"
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "AbstractType"
+            },
+            "arguments": []
           },
           {
             "$type": "RuleCall",
@@ -5246,8 +5249,11 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
         "$type": "Alternatives",
         "elements": [
           {
-            "$type": "Keyword",
-            "value": "type"
+            "$type": "RuleCall",
+            "rule": {
+              "$refText": "AbstractType"
+            },
+            "arguments": []
           },
           {
             "$type": "RuleCall",
@@ -5257,6 +5263,29 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "arguments": []
           }
         ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "AbstractType",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "AbstractType"
+      },
+      "definition": {
+        "$type": "Assignment",
+        "feature": "abstract",
+        "operator": "=",
+        "terminal": {
+          "$type": "Keyword",
+          "value": "type"
+        }
       },
       "definesHiddenTokens": false,
       "entry": false,

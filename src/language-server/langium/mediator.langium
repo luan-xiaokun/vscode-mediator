@@ -286,10 +286,13 @@ PortType infers PortType:
 
 // Parameter Type
 ParameterType infers ParameterType:
-    'type' | FunctionType | InterfaceType;
+    AbstractType | FunctionType | InterfaceType;
 
 NonInterfaceParameterType infers NonInterfaceParameterType:
-    'type' | FunctionType;
+    AbstractType | FunctionType;
+
+AbstractType infers AbstractType:
+    abstract='type';
 
 FunctionType infers FunctionType:
     'func' '(' (argtypes+=Type (',' argtypes+=Type)*)? ')' ':' returntype=Type;
