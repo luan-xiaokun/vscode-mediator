@@ -151,11 +151,11 @@ automaton <id: int>Acceptor(
 ) {
     variables {
         state: BasicState;
-        candidateValue: valueType | null;
+        candidateValue: valueType | Null;
         mostRecentBallot: int;
         recvBallot: int;
         lastAcceptedBallot: int;
-        lastAcceptedValue: valueType | null;
+        lastAcceptedValue: valueType | Null; 
     }
     transitions {
         // Prepare or Accept
@@ -171,7 +171,7 @@ automaton <id: int>Acceptor(
             } else if (fromProposer.value.msgType == acceptMsg && fromProposer.value.ballot >= mostRecentBallot) {
                 mostRecentBallot = fromProposer.value.ballot;
                 lastAcceptedBallot = fromProposer.value.ballot;
-                lastAcceptedValue = fromProposer.value.valueue;
+                lastAcceptedValue = fromProposer.value.value;
                 state = Accepted;
             }
         }

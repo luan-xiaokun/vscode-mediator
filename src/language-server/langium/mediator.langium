@@ -65,7 +65,7 @@ PortConnection infers PortConnection:
     (to+=AutomatonPort | '(' to+=AutomatonPort (',' to+=AutomatonPort)* ')');
 
 AutomatonPort infers AutomatonPort:
-    automaton=[NamedAutomaton:FeatureID] '.' port=[PortTyping:FeatureID] | port=[InternalPort:ID];
+    automaton=[NamedAutomaton:FeatureID] '.' port=[PortTyping:FeatureID] | intPort=[InternalPort:ID];
 
 PortConnectionOption infers PortConnectionOption:
     (sync='sync' ',' cast=('broadcast' | 'unicast'))

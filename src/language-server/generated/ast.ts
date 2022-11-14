@@ -177,7 +177,8 @@ export function isAutomaton(item: unknown): item is Automaton {
 export interface AutomatonPort extends AstNode {
     readonly $container: InstantiationConnection | PortConnection;
     automaton?: Reference<NamedAutomaton>
-    port: Reference<InternalPort> | Reference<PortTyping>
+    intPort?: Reference<InternalPort>
+    port?: Reference<PortTyping>
 }
 
 export const AutomatonPort = 'AutomatonPort';
@@ -961,11 +962,11 @@ export class MediatorAstReflection implements AstReflection {
             case 'AutomatonPort:automaton': {
                 return NamedAutomaton;
             }
-            case 'AutomatonPort:port': {
-                return PortTyping;
+            case 'AutomatonPort:intPort': {
+                return InternalPort;
             }
             case 'AutomatonPort:port': {
-                return InternalPort;
+                return PortTyping;
             }
             case 'ComponentInstantiation:component': {
                 return NamedAutomaton;

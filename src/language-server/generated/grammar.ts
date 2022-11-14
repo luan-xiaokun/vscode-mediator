@@ -1218,7 +1218,7 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
           },
           {
             "$type": "Assignment",
-            "feature": "port",
+            "feature": "intPort",
             "operator": "=",
             "terminal": {
               "$type": "CrossReference",
