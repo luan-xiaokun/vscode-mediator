@@ -1,5 +1,5 @@
 import { AstNode } from "langium";
-import { Expression, IntLiteral, isAbstractType, isAliasType, isAttributeExpression, isAutomaton, isBinaryExpression, isBoolLiteral, isCharLiteral, isComponentInstantiation, isConditionalExpression, isConstDef, isEnumMember, isEnumType, isExpression, isFunctionCallExpression, isFunctionDef, isFunctionType, isIndexingExpression, isIntLiteral, isListExpression, isListType, isNamedExpression, isNullLiteral, isParameterType, isPortType, isPortTyping, isPrefixExpression, isPrimitiveType, isRealLiteral, isStructExpression, isStructField, isStructType, isTemplateTyping, isTupleExpression, isTupleType, isType, isTypeDef, isUnionType, isVariableName, Type } from "../generated/ast";
+import { Expression, IntLiteral, isAbstractType, isAliasType, isAttributeExpression, isAutomaton, isBinaryExpression, isBoolLiteral, isCharLiteral, isComponentInstantiation, isConditionalExpression, isConstDef, isEnumMember, isEnumType, isExpression, isFunctionCallExpression, isFunctionDef, isFunctionType, isIndexingExpression, isIntLiteral, isListExpression, isListType, isNamedExpression, isNullLiteral, isParameterType, isPortType, isPortTyping, isPrefixExpression, isPrimitiveType, isRealLiteral, isStructExpression, isStructField, isStructType, isTemplateTyping, isTupleExpression, isTupleType, isType, isTypeDef, isUnionType, isVariableName, StructField, Type } from "../generated/ast";
 import { createAbstractType, createAnyType, createBoolType, createCharType, createEnumType, createErrorType, createFunctionType, createInterfaceType, createIntType, createListType, createNullType, createPortType, createRealType, createStructType, createTupleType, createUnionType, TypeDescription } from "./description";
 import { isSubtypeOf } from "./subtype";
 
@@ -86,7 +86,7 @@ export function inferExpression(node: Expression, cache: Map<AstNode, TypeDescri
     } else if (isTupleExpression(node)) {
         type = createTupleType(node.values.map(e => inferExpression(e, cache)));
     } else if (isStructExpression(node)) {
-        type = createStructType(node.fields, node.values.map(e => inferExpression(e, cache)));
+        type = createStructType(node.fields.map(value => { return { $type: "StructField", name: value } as StructField }), node.values.map(e => inferExpression(e, cache)));
     } else if (isNamedExpression(node)) {
         const ref = node.element.ref;
         if (ref) {
@@ -105,7 +105,7 @@ export function inferExpression(node: Expression, cache: Map<AstNode, TypeDescri
                 type = createPortType(ref.type.direction, inferTypeRef(ref.type.type, cache));
             } else if (isStructField(ref)) {
                 type = createStructType(
-                    ref.$container.fields.map(value => value.name),
+                    ref.$container.fields,
                     ref.$container.types.map(value => inferTypeRef(value, cache))
                 );
             } else if (isTemplateTyping(ref)) {
@@ -143,7 +143,7 @@ export function inferExpression(node: Expression, cache: Map<AstNode, TypeDescri
             const field = node.field && node.field.ref ? node.field.ref.name : node.portField;
             type = createErrorType("Field name '" + field + "'not found", node);
             if (field) {
-                const index = previousType.fields.indexOf(field);
+                const index = previousType.fields.map(value => value.name).indexOf(field);
                 if (index >= 0) {
                     type = previousType.fieldTypes[index];
                 }
@@ -356,7 +356,7 @@ export function inferTypeRef(node: Type, cache: Map<AstNode, TypeDescription>): 
         type = createEnumType(node.members);
     } else if (isStructType(node)) {
         type = createStructType(
-            node.fields.map(e => e.name),
+            node.fields,
             node.types.map(e => inferTypeRef(e, cache))
         );
     } else if (isAliasType(node)) {

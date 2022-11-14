@@ -1,5 +1,5 @@
 import { AstNode } from "langium";
-import { BoolLiteral, CharLiteral, EnumMember, Expression, IntLiteral, RealLiteral } from "../generated/ast";
+import { BoolLiteral, CharLiteral, EnumMember, Expression, IntLiteral, RealLiteral, StructField } from "../generated/ast";
 
 export type TypeDescription =
     AnyTypeDescription
@@ -146,11 +146,11 @@ export function isEnumType(item: TypeDescription): item is EnumTypeDescription {
 
 export interface StructTypeDescription {
     readonly $type: "struct";
-    readonly fields: string[];
+    readonly fields: StructField[];
     readonly fieldTypes: TypeDescription[];
 }
 
-export function createStructType(fields: string[], fieldTypes: TypeDescription[]): StructTypeDescription {
+export function createStructType(fields: StructField[], fieldTypes: TypeDescription[]): StructTypeDescription {
     return {
         $type: "struct",
         fields,
@@ -308,7 +308,7 @@ export function typeToString(item: TypeDescription): string {
         return `enum {${members}}`;
     } else if (item.$type === "struct") {
         const structs = item.fields.map((value, index) => {
-            `${value}: ${typeToString(item.fieldTypes[index])}`
+            `${value.name}: ${typeToString(item.fieldTypes[index])}`
         }).join(", ");
         return `struct {${structs}}`
     } else if (item.$type === "list") {
