@@ -6,7 +6,7 @@ entry Program:
 // Type Definition
 TypeDefinition infers TypeDef:
     'typedef' type=Type 'as' name=FeatureID ';';
-
+ 
 // Constant Definition
 ConstDefinition infers ConstDef:
     'const' expr=Expression 'as' name=FeatureID ';';
@@ -18,7 +18,7 @@ SystemDefinition infers System:
     '{'
         ('internals' internals+=InternalPort (',' internals+=InternalPort)* ';')?
         ('components' '{' (components+=ComponentTyping ';')+ '}')?
-        'connections' '{' (connections+=Connection ';')+ '}'
+        ('connections' '{' (connections+=Connection ';')+ '}')?
     '}';
 
 // Automaton Definition

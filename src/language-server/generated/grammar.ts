@@ -385,38 +385,44 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
             "cardinality": "?"
           },
           {
-            "$type": "Keyword",
-            "value": "connections"
-          },
-          {
-            "$type": "Keyword",
-            "value": "{"
-          },
-          {
             "$type": "Group",
             "elements": [
               {
-                "$type": "Assignment",
-                "feature": "connections",
-                "operator": "+=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$refText": "Connection"
-                  },
-                  "arguments": []
-                }
+                "$type": "Keyword",
+                "value": "connections"
               },
               {
                 "$type": "Keyword",
-                "value": ";"
+                "value": "{"
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "connections",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$refText": "Connection"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ";"
+                  }
+                ],
+                "cardinality": "+"
+              },
+              {
+                "$type": "Keyword",
+                "value": "}"
               }
             ],
-            "cardinality": "+"
-          },
-          {
-            "$type": "Keyword",
-            "value": "}"
+            "cardinality": "?"
           },
           {
             "$type": "Keyword",

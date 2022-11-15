@@ -1,0 +1,25 @@
+/* Example 2.17 Two Independent Traffic Lights 
+in Principles of Model Checking
+Section 2.2.1 Concurrency and Interleaving */
+
+typedef enum {RED, GREEN} as LightColor;
+
+automaton TrafficLight() {
+    variables {
+        color: LightColor;
+    }
+    initial {
+        color = RED;
+    }
+    transitions {
+        color == RED -> color = GREEN;
+        color == GREEN -> color = RED;
+    }
+}
+
+system TwoTrafficLights() {
+    components {
+        t1: TrafficLight;
+        t2: TrafficLight;
+    }
+}

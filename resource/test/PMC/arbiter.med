@@ -1,0 +1,152 @@
+/* Example 2.28 Mutual Exclusion by an Arbiter, Example 2.30 Railroad Crossing
+in Principles of Model Checking
+Section 2.2.3 Synchronous Message Passing */
+
+typedef enum {LOCK, UNLOCK} as AState;
+typedef enum {NONCRIT, CRIT} as PState;
+
+automaton Arbiter(request: in Null, release: in Null) {
+    variables {
+        state: AState;
+    }
+    initial {
+        state = UNLOCK;
+    }
+    transitions {
+        state == UNLOCK && !request.reqRead -> request.reqRead = true;
+        state == UNLOCK && request.reqRead && request.reqWrite -> {
+            sync request;
+            state = LOCK;
+        }
+        state == LOCK && !release.reqRead -> release.reqRead = true;
+        state == LOCK && release.reqRead && release.reqWrite -> {
+            sync release;
+            state = UNLOCK;
+        }
+    }
+}
+
+automaton Process(signal: out Null, wait: out Null) {
+    variables {
+        state: PState;
+    }
+    initial {
+        state = NONCRIT;
+    }
+    transitions {
+        state == NONCRIT && !wait.reqWrite -> wait.reqWrite = true;
+        state == NONCRIT && wait.reqRead && wait.reqWrite -> {
+            sync wait;
+            state = CRIT;
+        }
+        state == CRIT && !signal.reqWrite -> signal.reqWrite = true;
+        state == CRIT && signal.reqRead && signal.reqWrite -> {
+            sync signal;
+            state = NONCRIT;
+        }
+    }
+}
+
+system ArbiterMutualExclusion() {
+    components {
+        p1: Process;
+        p2: Process;
+        a: Arbiter;
+    }
+    connections {
+        (p1.wait, p2.wait) -> a.request;
+        (p1.signal, p2.signal) -> a.release;
+    }
+}
+
+typedef enum {FAR, NEAR, IN} as TState;
+
+automaton Train(approach: out Null, exit: out Null) {
+    variables {
+        state: TState;
+    }
+    initial {
+        state = FAR;
+    }
+    transitions {
+        state == FAR && !approach.reqWrite -> approach.reqWrite = true;
+        state == FAR && approach.reqRead && approach.reqWrite -> {
+            sync approach;
+            state = NEAR;
+        }
+        state == NEAR -> {
+            state = IN;
+        }
+        state == IN && !exit.reqWrite -> exit.reqWrite = true;
+        state == IN && exit.reqRead && exit.reqWrite -> {
+            sync exit;
+            state = FAR;
+        }
+    }
+}
+
+automaton Controller(approach: in Null, lower: out Null, exit: in Null, raise: out Null) {
+    variables {
+        state: int;
+    }
+    initial {
+        state = 0;
+    }
+    transitions {
+        state == 0 && !approach.reqRead -> approach.reqRead = true;
+        state == 0 && approach.reqRead && approach.reqWrite -> {
+            sync approach;
+            state = 1;
+        }
+        state == 1 && !lower.reqWrite -> lower.reqWrite = true;
+        state == 1 && lower.reqRead && lower.reqWrite -> {
+            sync lower;
+            state = 2;
+        }
+        state == 2 && !exit.reqRead -> exit.reqRead = true;
+        state == 2 && exit.reqRead && exit.reqWrite -> {
+            sync exit;
+            state = 3;
+        }
+        state == 3 && !raise.reqWrite -> raise.reqWrite = true;
+        state == 3 && raise.reqRead && raise.reqWrite -> {
+            sync raise;
+            state = 0;
+        }
+    }
+}
+
+automaton Gate(lower: in Null, raise: in Null) {
+    variables {
+        state: bool;
+    }
+    initial {
+        state = true;
+    }
+    transitions {
+        state && !lower.reqRead -> lower.reqRead = true;
+        state && lower.reqRead && lower.reqWrite -> {
+            sync lower;
+            state = false;
+        }
+        !state && !raise.reqRead -> raise.reqRead = true;
+        !state && raise.reqRead && raise.reqWrite -> {
+            sync raise;
+            state = true;
+        }
+    }
+}
+
+system RailroadCrossing() {
+    components {
+        t: Train;
+        c: Controller;
+        g: Gate;
+    }
+    connections {
+        t.approach -> c.approach;
+        c.lower -> g.lower;
+        t.exit -> c.exit;
+        c.raise -> g.raise;
+    }
+}

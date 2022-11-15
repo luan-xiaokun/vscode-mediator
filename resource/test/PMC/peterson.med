@@ -1,0 +1,94 @@
+/* Example 2.25 Peterson's Mutual Exclusion Algorithm
+in Principles of Model Checking
+Section 2.2.2 Communication via Shared Variables */
+
+typedef enum {NONCRIT, REQUEST, WAIT, CRIT} as PState;
+
+automaton SimplePeterson() {
+    variables {
+        // b_i means process i wants to enter critical section
+        b1: bool; b2: bool;
+        // x = 1 or 2, means that process i has higher priority
+        x: int;
+        // state of process 1 and process 2
+        s1: PState; s2: PState;
+    }
+    initial {
+        b1 = false;
+        b2 = false;
+        s1 = NONCRIT;
+        s2 = NONCRIT;
+    }
+    transitions {
+        group {
+            s1 == NONCRIT -> { b1 = true; s1 = REQUEST; }
+            s2 == NONCRIT -> { b2 = true; s2 = REQUEST; }
+            s1 == REQUEST -> { x = 2; s1 = WAIT; }
+            s2 == REQUEST -> { x = 1; s2 = WAIT; }
+            s1 == WAIT && (x == 1 || !b2) -> s1 = CRIT;
+            s2 == WAIT && (x == 2 || !b1) -> s2 = CRIT;
+            s1 == CRIT -> { b1 = false; s1 = NONCRIT; }
+            s2 == CRIT -> { b2 = false; s2 = NONCRIT; }
+        }
+    }
+}
+
+function allLower(list: int[3], v: int, except: int): bool {
+    statements {
+        return ((list[0] < v) || (except == 0)) &&
+               ((list[1] < v) || (except == 1)) &&
+               ((list[2] < v) || (except == 2));
+    }
+}
+
+automaton Peterson() {
+    variables {
+        // priority[j] = i means that process i has the lowest priority in level j
+        priority: int[3];
+        // level[i] = j means that process i is at level j + 1
+        level: int[3];
+        // state[i] is the state of process i
+        state: int[3];
+        // i is the process that is allowed to take action in next step
+        i: int;
+        // selecting
+        selecting: bool;
+    }
+    initial {
+        // all process starts at level -1
+        level[i] = -1;
+        state[i] = 0;
+    }
+    transitions {
+        group {
+            selecting -> i = (i + 1) % 3;
+            selecting -> selecting = false;
+        }
+        group {
+            // 0 means non-critical
+            state[i] == 0 -> {
+                level[i] = 0;
+                priority[0] = i;
+                state[i] = 1;
+                selecting = true;
+            }
+            // 1 means first loop ending
+            state[i] == 1 && ((priority[0] != i) || allLower(level, 0, i)) -> {
+                level[i] = 1;
+                priority[1] = i;
+                state[i] = 2;
+                selecting = true;
+            }
+            // 2 means second loop ending
+            state[i] == 2 && ((priority[1] != i) || allLower(level, 1, i)) -> {
+                state[i] = 3;
+                selecting = true;
+            }
+            // 3 means critical
+            state[i] == 3 -> {
+                level[i] = 0;
+                selecting = true;
+            }
+        }
+    }
+}
