@@ -1,0 +1,22 @@
+MODULE main
+    VAR
+    producer_x: integer;
+    consumer_y: integer;
+    port_value: boolean;
+    port_reqRead: boolean;
+    port_reqWrite: boolean;
+
+    INIT producer_x = 0;
+    INIT port_reqRead = FALSE;
+    INIT port_reqWrite = FALSE;
+
+    TRANS !port_reqWrite -> next(port_reqWrite) = TRUE;
+    TRANS !port_reqRead -> next(port_reqRead) = TRUE;
+    TRANS port_reqRead & port_reqWrite -> 
+            next(port_value) = producer_x &
+            next(port_reqRead) = FALSE &
+            next(port_reqWrite) = FALSE &
+            next(producer_x) = producer_x + 1 &
+            next(consumer_y) = port_value;
+    
+    INVAR producer_x >= 0;

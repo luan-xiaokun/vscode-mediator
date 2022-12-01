@@ -1,0 +1,71 @@
+automaton Producer(OUT: out int) {
+    variables {
+        x: int;
+    }
+    initial {
+        x = 0;
+    }
+    transitions {
+        !OUT.reqWrite -> OUT.reqWrite = true;
+        OUT.reqRead && OUT.reqWrite -> {
+            OUT.value = x;
+            sync OUT;
+            x += 1;
+        }
+    }
+    invariants {
+        x >= 0;
+    }
+}
+
+automaton Consumer(IN: in int) {
+    variables {
+        y: int;
+    }
+    transitions {
+        !IN.reqRead -> IN.reqRead = true;
+        IN.reqRead && IN.reqWrite -> {
+            sync IN;
+            y = IN.value;
+        }
+    }
+}
+
+system main() {
+    components {
+        p: Producer;
+        c: Consumer;
+    }
+    connections {
+        p.OUT -> c.IN;
+    }
+}
+
+automaton main() {
+    variables {
+        producer_x: int;
+        consumer_y: int;
+        port_value: int;
+        port_reqRead: bool;
+        port_reqWrite: bool;
+    }
+    initial {
+        producer_x = 0;
+        port_reqRead = false;
+        port_reqWrite = false;
+    }
+    transitions {
+        !port_reqWrite -> port_reqWrite = true;
+        !port_reqRead -> port_reqRead = true;
+        port_reqRead && port_reqWrite -> {
+            port_value = producer_x;
+            port_reqRead = false;
+            port_reqWrite = false;
+            producer_x += 1;
+            consumer_y = port_value;
+        }
+    }
+    invariants {
+        producer_x >= 0;
+    }
+}

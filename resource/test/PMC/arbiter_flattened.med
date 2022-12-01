@@ -1,0 +1,345 @@
+
+automaton <T: type> BasicSync(IN1: in T, IN2: in T, OUT: out T) {
+    transitions {
+        group {
+            IN1.reqRead && IN1.reqWrite && OUT.reqRead && OUT.reqWrite -> {
+                sync IN1;
+                OUT.value = IN1.value;
+                sync OUT;
+            }
+
+            IN2.reqRead && IN2.reqWrite && OUT.reqRead && OUT.reqWrite -> {
+                sync IN2;
+                OUT.value = IN2.value;
+                sync OUT;
+            }
+
+            // whenever the consumer wants to read a value
+            // tell all producers
+            OUT.reqRead -> {
+                IN1.reqRead = true;
+                IN2.reqRead = true;
+            }
+            // whenever the consumer does not want read any value
+            // tell all producers
+            !OUT.reqRead -> {
+                IN1.reqRead = false;
+                IN2.reqRead = false;
+            }
+            // whenever any producer wants to write a value
+            // tell the consumer
+            IN1.reqWrite -> OUT.reqWrite = true;
+            IN2.reqWrite -> OUT.reqWrite = true;
+            // when all producers do not want to write any value
+            // tell the consumer
+            !IN1.reqWrite && !IN2.reqWrite -> OUT.reqWrite = false;
+        }
+    }
+}
+
+automaton main() {
+    variables {
+        // component local variables
+        p1_trueed: bool;
+        p2_state: bool;
+        a_locked: bool;
+        // port variables
+        p1_signal_value: Null;
+        p2_signal_value: Null;
+        p1_wait_value: Null;
+        p2_wait_value: Null;
+        p1_signal_reqRead: bool;
+        p2_signal_reqRead: bool;
+        p1_wait_reqRead: bool;
+        p2_wait_reqRead: bool;
+        p1_signal_reqWrite: bool;
+        p2_signal_reqWrite: bool;
+        p1_wait_reqWrite: bool;
+        p2_wait_reqWrite: bool;
+        a_request_value: Null;
+        a_release_value: Null;
+        a_request_reqRead: bool;
+        a_release_reqRead: bool;
+        a_request_reqWrite: bool;
+        a_release_reqWrite: bool;
+    }
+    initial {
+        // component local variable initialization
+        p1_trueed = false;
+        p2_state = false;
+        a_locked = false;
+        // port variable initilization
+        p1_signal_reqRead = false;
+        p2_signal_reqRead = false;
+        p1_wait_reqRead = false;
+        p2_wait_reqRead = false;
+        p1_signal_reqWrite = false;
+        p2_signal_reqWrite = false;
+        p1_wait_reqWrite = false;
+        p2_wait_reqWrite = false;
+        a_request_reqRead = false;
+        a_release_reqRead = false;
+        a_request_reqWrite = false;
+        a_release_reqWrite = false;
+    }
+    transitions {
+        group {
+            // connection internal
+            a_request_reqRead -> {
+                p1_wait_reqRead = true;
+                p2_wait_reqRead = true;
+            }
+            !a_request_reqRead -> {
+                p1_wait_reqRead = false;
+                p2_wait_reqRead = false;
+            }
+            a_release_reqRead -> {
+                p1_signal_reqRead = true;
+                p2_signal_reqRead = true;
+            }
+            !a_release_reqRead -> {
+                p1_signal_reqRead = false;
+                p2_signal_reqRead = false;
+            }
+            p1_wait_reqWrite -> a_request_reqWrite = true;
+            p2_wait_reqWrite -> a_request_reqWrite = true;
+            p1_signal_reqWrite -> a_release_reqWrite = true;
+            p2_signal_reqWrite -> a_release_reqWrite = true;
+            !p1_wait_reqWrite && !p2_wait_reqWrite -> a_request_reqWrite = false;
+            !p1_signal_reqWrite && !p2_signal_reqWrite -> a_release_reqWrite = false;
+
+            // p1 internal
+            p1_trueed == false && !p1_wait_reqWrite -> p1_wait_reqWrite = true;
+            p1_trueed == true && !p1_signal_reqWrite -> p1_signal_reqWrite = true;
+
+            // p2 internal
+            p2_state == false && !p2_wait_reqWrite -> p2_wait_reqWrite = true;
+            p2_state == true && !p2_signal_reqWrite -> p2_signal_reqWrite = true;
+
+            // arbiter internal
+            a_locked == false && !a_request_reqRead -> a_request_reqRead = true;
+            a_locked == true && !a_release_reqRead -> a_release_reqRead = true;
+
+            // sync
+            p1_trueed == false
+                && p1_wait_reqRead && p1_wait_reqWrite
+                && a_request_reqRead && a_request_reqWrite -> {
+                p1_wait_value = null;
+                p1_wait_reqRead = false;
+                p1_wait_reqWrite = false;
+                a_request_value = p1_wait_value;
+                a_request_reqRead = false;
+                a_request_reqWrite = false;
+                p1_trueed = true;
+                a_locked = true;
+            }
+            p1_trueed == true
+                && p1_signal_reqRead && p1_signal_reqWrite
+                && a_release_reqRead && a_release_reqWrite -> {
+                p1_signal_value = null;
+                p1_signal_reqRead = false;
+                p1_signal_reqWrite = false;
+                a_release_value = p1_signal_value;
+                a_release_reqRead = false;
+                a_release_reqWrite = false;
+                p1_trueed = false;
+                a_locked = false;
+            }
+
+            p2_state == false
+                && p2_wait_reqRead && p2_wait_reqWrite
+                && a_request_reqRead && a_request_reqWrite -> {
+                p2_wait_value = null;
+                p2_wait_reqRead = false;
+                p2_wait_reqWrite = false;
+                a_request_value = p2_wait_value;
+                a_request_reqRead = false;
+                a_request_reqWrite = false;
+                p2_state = true;
+                a_locked = true;
+            }
+            p2_state == true
+                && p2_signal_reqRead && p2_signal_reqWrite
+                && a_release_reqRead && a_release_reqWrite -> {
+                p2_signal_value = null;
+                p2_signal_reqRead = false;
+                p2_signal_reqWrite = false;
+                a_release_value = p2_signal_value;
+                a_release_reqRead = false;
+                a_release_reqWrite = false;
+                p2_state = false;
+                a_locked = false;
+            }
+        }
+    }
+}
+
+
+automaton main() {
+    variables {
+        p1_state: bool;
+        p2_state: bool;
+        req1: bool;
+        req2: bool;
+        auth1: bool;
+        auth2: bool;
+    }
+    initial {
+        p1_state = false;
+        p2_state = false;
+        req1 = false;
+        req2 = false;
+        auth1 = false;
+        auth2 = false;
+    }
+    transitions {
+        group {
+            // arbiter
+            req1 && !auth2 -> {
+                auth1 = true;
+                req1 = false;
+                p1_state = true;
+            }
+            req2 && !auth1 -> {
+                auth2 = true;
+                req2 = false;
+                p2_state = true;
+            }
+
+            // p1
+            p1_state == false -> req1 = true;
+            p1_state == true -> {
+                p1_state = false;
+                auth1 = false;
+            }
+
+            // p2
+            p1_state == false -> req2 = true;
+            p2_state == true -> {
+                p2_state = false;
+                req2 = true;
+                auth2 = false;
+            }
+        }
+    }
+}
+
+automaton <T: type> SyncBroadcast(IN1: in T, IN2: in T, OUT1: out T, OUT2: out T) {
+    transitions {
+        group {
+            IN1.reqRead && IN1.reqWrite 
+            && OUT1.reqRead && OUT1.reqWrite 
+            && OUT2.reqRead && OUT2.reqWrite -> {
+                sync IN1;
+                OUT1.value = IN1.value;
+                OUT2.value = IN1.value;
+                sync OUT1;
+                sync OUT2;
+            }
+
+            IN2.reqRead && IN2.reqWrite
+            && OUT1.reqRead && OUT1.reqWrite
+            && OUT2.reqRead && OUT2.reqWrite -> {
+                sync IN2;
+                OUT1.value = IN2.value;
+                OUT2.value = IN2.value;
+                sync OUT1;
+                sync OUT2;
+            }
+
+            // when all consumers want to read a value
+            // tell all producers
+            OUT1.reqRead && OUT2.reqRead -> {
+                IN1.reqRead = true;
+                IN2.reqRead = true;
+            }
+            // when any consumer does not want to read any value
+            // tell all producers
+            !OUT1.reqRead || !OUT2.reqRead -> {
+                IN1.reqRead = false;
+                IN2.reqRead = false;
+            }
+            // when any producer wants to write a value
+            // tell all consumers
+            IN1.reqWrite -> {
+                OUT1.reqWrite = true;
+                OUT2.reqWrite = true;
+            }
+            IN2.reqWrite -> {
+                OUT1.reqWrite = true;
+                OUT2.reqWrite = true;
+            }
+            // when all producers do not want to write any value
+            // tell all consumers
+            !IN1.reqWrite && !IN2.reqWrite -> {
+                OUT1.reqWrite = false;
+                OUT2.reqWrite = false;
+            }
+        }
+    }
+}
+
+
+automaton <T: type> SyncUnicast(IN1: in T, IN2: in T, OUT1: out T, OUT2: out T) {
+    transitions {
+        group {
+            // m * n transitions
+            IN1.reqRead && IN1.reqWrite 
+            && OUT1.reqRead && OUT1.reqWrite -> {
+                sync IN1;
+                OUT1.value = IN1.value;
+                sync OUT1;
+            }
+
+            IN1.reqRead && IN1.reqWrite
+            && OUT2.reqRead && OUT2.reqWrite -> {
+                sync IN1;
+                OUT2.value = IN1.value;
+                sync OUT2;
+            }
+
+            IN2.reqRead && IN2.reqWrite 
+            && OUT1.reqRead && OUT1.reqWrite -> {
+                sync IN2;
+                OUT1.value = IN2.value;
+                sync OUT1;
+            }
+
+            IN2.reqRead && IN2.reqWrite
+            && OUT2.reqRead && OUT2.reqWrite -> {
+                sync IN2;
+                OUT2.value = IN2.value;
+                sync OUT2;
+            }
+
+            // when any consumer wants to read a value
+            // tell all producers
+            OUT1.reqRead || OUT2.reqRead -> {
+                IN1.reqRead = true;
+                IN2.reqRead = true;
+            }
+            // when all consumers do not want to read any value
+            // tell all producers
+            !OUT1.reqRead && !OUT2.reqRead -> {
+                IN1.reqRead = false;
+                IN2.reqRead = false;
+            }
+            // when any producer wants to write a value
+            // tell all consumers
+            IN1.reqWrite -> {
+                OUT1.reqWrite = true;
+                OUT2.reqWrite = true;
+            }
+            IN2.reqWrite -> {
+                OUT1.reqWrite = true;
+                OUT2.reqWrite = true;
+            }
+            // when all producers do not want to write any value
+            // tell all consumers
+            !IN1.reqWrite && !IN2.reqWrite -> {
+                OUT1.reqWrite = false;
+                OUT2.reqWrite = false;
+            }
+        }
+    }
+}

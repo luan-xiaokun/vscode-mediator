@@ -1,0 +1,34 @@
+MODULE User(auth)
+    VAR
+    status: { NonCritical, Critical };
+    req: boolean;
+
+    ASSIGN
+    init(status) := NonCritical;
+    next(status) := 
+        case
+            status = NonCritical :
+                case
+                    next(auth) = FALSE : Trying;
+                    next(auth) = TRUE : Critical;
+                esac;
+            status = Critical : NonCritical;
+        esac;
+    req := status = Critical;
+
+MODULE Arbiter(req0, req1)
+    VAR
+    auth0: boolean;
+    auth1: boolean;
+
+    ASSIGN
+    init(auth0) := FALSE;
+    init(auth1) := FALSE;
+    next(auth0) := req0 & !auth1;
+    next(auth1) := req1 & !auth0;
+
+MODULE main
+    VAR
+    U0: User(Ar.auth0);     --- User 0
+    U1: User(Ar.auth1);     --- User 1
+    Ar: Arbiter(U0.req, U1.req);

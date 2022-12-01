@@ -2,47 +2,38 @@
 in Principles of Model Checking
 Section 2.2.3 Synchronous Message Passing */
 
-typedef enum {LOCK, UNLOCK} as AState;
-typedef enum {NONCRIT, CRIT} as PState;
-
 automaton Arbiter(request: in Null, release: in Null) {
-    variables {
-        state: AState;
-    }
-    initial {
-        state = UNLOCK;
-    }
+    variables { locked: bool; }
+    initial { locked = false; }
     transitions {
-        state == UNLOCK && !request.reqRead -> request.reqRead = true;
-        state == UNLOCK && request.reqRead && request.reqWrite -> {
+        !locked && !request.reqRead -> request.reqRead = true;
+        !locked && request.reqRead && request.reqWrite -> {
             sync request;
-            state = LOCK;
+            locked = true;
         }
-        state == LOCK && !release.reqRead -> release.reqRead = true;
-        state == LOCK && release.reqRead && release.reqWrite -> {
+        locked && !release.reqRead -> release.reqRead = true;
+        locked && release.reqRead && release.reqWrite -> {
             sync release;
-            state = UNLOCK;
+            locked = false;
         }
     }
 }
 
 automaton Process(signal: out Null, wait: out Null) {
-    variables {
-        state: PState;
-    }
-    initial {
-        state = NONCRIT;
-    }
+    variables { critical: bool; }
+    initial { critical = false; }
     transitions {
-        state == NONCRIT && !wait.reqWrite -> wait.reqWrite = true;
-        state == NONCRIT && wait.reqRead && wait.reqWrite -> {
+        !critical && !wait.reqWrite -> wait.reqWrite = true;
+        !critical && wait.reqRead && wait.reqWrite -> {
+            wait.value = null;
             sync wait;
-            state = CRIT;
+            critical = true;
         }
-        state == CRIT && !signal.reqWrite -> signal.reqWrite = true;
-        state == CRIT && signal.reqRead && signal.reqWrite -> {
+        critical && !signal.reqWrite -> signal.reqWrite = true;
+        critical && signal.reqRead && signal.reqWrite -> {
+            signal.value = null;
             sync signal;
-            state = NONCRIT;
+            critical = false;
         }
     }
 }
