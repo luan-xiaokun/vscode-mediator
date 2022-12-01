@@ -5430,6 +5430,14 @@ export const MediatorGrammar = (): Grammar => loadedMediatorGrammar ?? (loadedMe
           },
           "isArray": false,
           "isRef": false
+        },
+        {
+          "$type": "AtomType",
+          "refType": {
+            "$refText": "System"
+          },
+          "isArray": false,
+          "isRef": false
         }
       ],
       "name": "NamedAutomaton"

@@ -1,7 +1,7 @@
 // import { OutputChannel, window } from 'vscode';
 import { AstNode, LangiumParser } from "langium";
 import { MediatorServices } from "./mediator-module";
-import { isProgram, Program } from './generated/ast';
+import { Automaton, ConstDef, FunctionDef, isProgram, Program, System, TypeDef } from './generated/ast';
 
 export interface Generator {
     generate(program: string | AstNode): string | undefined;
@@ -44,5 +44,17 @@ export class MediatorGenerator implements Generator {
         // for (let system of program.systems) {
         //     console.log("system name: " + system.name);
         // }
+    }
+
+    generateIVL(program: Program): Program {
+        var result: Program = {
+            $type: 'Program',
+            automatons: Array<Automaton>(),
+            constdefs: Array<ConstDef>(),
+            functions: Array<FunctionDef>(),
+            systems: Array<System>(),
+            typedefs: Array<TypeDef>(),
+        }
+        return result;
     }
 }

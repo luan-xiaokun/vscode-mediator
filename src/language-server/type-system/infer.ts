@@ -1,5 +1,5 @@
 import { AstNode } from "langium";
-import { Expression, IntLiteral, isAbstractType, isAliasType, isAttributeExpression, isAutomaton, isBinaryExpression, isBoolLiteral, isCharLiteral, isComponentInstantiation, isConditionalExpression, isConstDef, isEnumMember, isEnumType, isExpression, isFunctionCallExpression, isFunctionDef, isFunctionType, isIndexingExpression, isIntLiteral, isListExpression, isListType, isNamedExpression, isNullLiteral, isParameterType, isPortType, isPortTyping, isPrefixExpression, isPrimitiveType, isRealLiteral, isStructExpression, isStructField, isStructType, isTemplateTyping, isTupleExpression, isTupleType, isType, isTypeDef, isUnionType, isVariableName, StructField, Type } from "../generated/ast";
+import { Expression, IntLiteral, isAbstractType, isAliasType, isAttributeExpression, isAutomaton, isBinaryExpression, isBoolLiteral, isCharLiteral, isComponentInstantiation, isConditionalExpression, isConstDef, isEnumMember, isEnumType, isExpression, isFunctionCallExpression, isFunctionDef, isFunctionType, isIndexingExpression, isIntLiteral, isListExpression, isListType, isNamedExpression, isNullLiteral, isParameterType, isPortType, isPortTyping, isPrefixExpression, isPrimitiveType, isRealLiteral, isStructExpression, isStructField, isStructType, isSystem, isTemplateTyping, isTupleExpression, isTupleType, isType, isTypeDef, isUnionType, isVariableName, StructField, Type } from "../generated/ast";
 import { createAbstractType, createAnyType, createBoolType, createCharType, createEnumType, createErrorType, createFunctionType, createInterfaceType, createIntType, createListType, createNullType, createPortType, createRealType, createStructType, createTupleType, createUnionType, TypeDescription } from "./description";
 import { isSubtypeOf } from "./subtype";
 
@@ -36,7 +36,7 @@ export function inferType(node: AstNode | undefined, cache: Map<AstNode, TypeDes
     } else if (isComponentInstantiation(node)) {
         if (node.component.ref) {
             const ref = node.component.ref;
-            if (isAutomaton(ref)) {
+            if (isAutomaton(ref) || isSystem(ref)) {
                 type = createInterfaceType(
                     ref.ports.map(value => inferType(value.type, cache))
                 );

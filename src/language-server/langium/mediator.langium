@@ -48,7 +48,7 @@ FunctionDefinition infers FunctionDef:
 // Named Identifiers
 type NamedElement = VariableName | ConstDef | EnumMember | StructField | PortTyping | TemplateTyping | FunctionDef;
 
-type NamedAutomaton = ComponentName | Automaton;
+type NamedAutomaton = ComponentName | Automaton | System;
 
 type NamedType = TypeDef | TemplateTyping;
 

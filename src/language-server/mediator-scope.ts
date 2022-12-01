@@ -114,7 +114,7 @@ export class MediatorScopeProvider extends DefaultScopeProvider {
                 // reference to port typing
                 let automaton = automatonPort.automaton.ref;
                 while (automaton) {
-                    if (isAutomaton(automaton)) {
+                    if (isAutomaton(automaton) || isSystem(automaton)) {
                         return this.createScopeForNodes(automaton.ports);
                     } else {
                         automaton = automaton.$container.type.component.ref

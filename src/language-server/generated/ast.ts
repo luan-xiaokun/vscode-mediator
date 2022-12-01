@@ -35,7 +35,7 @@ export function isFunctionStatement(item: unknown): item is FunctionStatement {
     return reflection.isInstance(item, FunctionStatement);
 }
 
-export type NamedAutomaton = Automaton | ComponentName;
+export type NamedAutomaton = Automaton | ComponentName | System;
 
 export const NamedAutomaton = 'NamedAutomaton';
 
@@ -899,7 +899,8 @@ export class MediatorAstReflection implements AstReflection {
                 return this.isSubtype(Expression, supertype);
             }
             case Automaton:
-            case ComponentName: {
+            case ComponentName:
+            case System: {
                 return this.isSubtype(NamedAutomaton, supertype);
             }
             case ConditionalStatement: {
